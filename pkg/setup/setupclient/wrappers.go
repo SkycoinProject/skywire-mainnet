@@ -20,13 +20,13 @@ type RouteGroupDialer interface {
 		log *logging.Logger,
 		n *snet.Network,
 		setupNodes []cipher.PubKey,
-		req routing.BidirectionalRoute,
-	) (routing.EdgeRules, error)
+		req routing.BidirectionalRouteList,
+	) (routing.EdgeRulesList, error)
 }
 
 type setupNodeDialer struct{}
 
-// NewSetupNodeDialer returns a wrapper for (*Client).DialRouteGroup.
+// NewSetupNodeDialer returns a wrapper for (*Client).DialRouteGroupMultiple.
 func NewSetupNodeDialer() RouteGroupDialer {
 	return new(setupNodeDialer)
 }
@@ -37,11 +37,11 @@ func (d *setupNodeDialer) Dial(
 	log *logging.Logger,
 	n *snet.Network,
 	setupNodes []cipher.PubKey,
-	req routing.BidirectionalRoute,
-) (routing.EdgeRules, error) {
+	req routing.BidirectionalRouteList,
+) (routing.EdgeRulesList, error) {
 	client, err := NewClient(ctx, log, n, setupNodes)
 	if err != nil {
-		return routing.EdgeRules{}, err
+		return routing.EdgeRulesList{}, err
 	}
 
 	defer func() {
@@ -50,9 +50,9 @@ func (d *setupNodeDialer) Dial(
 		}
 	}()
 
-	resp, err := client.DialRouteGroup(ctx, req)
+	resp, err := client.DialRouteGroupMultiple(ctx, req)
 	if err != nil {
-		return routing.EdgeRules{}, fmt.Errorf("route setup: %w", err)
+		return routing.EdgeRulesList{}, fmt.Errorf("route setup: %w", err)
 	}
 
 	return resp, nil

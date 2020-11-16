@@ -21,7 +21,7 @@ func NewRPCGateway(router Router) *RPCGateway {
 }
 
 // AddEdgeRules adds edge rules.
-func (r *RPCGateway) AddEdgeRules(rules routing.EdgeRules, ok *bool) error {
+func (r *RPCGateway) AddEdgeRules(rules routing.EdgeRulesList, ok *bool) error {
 	if err := r.router.IntroduceRules(rules); err != nil {
 		*ok = false
 

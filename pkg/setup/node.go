@@ -126,7 +126,7 @@ func CreateRouteGroup(ctx context.Context, dialer snet.Dialer, biRt routing.Bidi
 	}
 
 	// Reserve route IDs from remote routers.
-	rtIDR, err := ReserveRouteIDs(ctx, log, dialer, biRt)
+	rtIDR, err := ReserveRouteIDs(ctx, log, dialer, [][]routing.Hop{biRt.Forward, biRt.Reverse})
 	if err != nil {
 		return routing.EdgeRules{}, err
 	}
@@ -165,9 +165,78 @@ func CreateRouteGroup(ctx context.Context, dialer snet.Dialer, biRt routing.Bidi
 	return initEdge, nil
 }
 
+// CreateRouteGroupMultiple creates a route group by communicating with routers used within the bidirectional route list.
+// The following steps are taken:
+// * Check the validity of bi route input.
+// * Route IDs are reserved from the routers.
+// * Intermediary rules are broadcast to the intermediary routers.
+// * Edge rules are broadcast to the responding router.
+// * Edge rules is returned (to the initiating router).
+func CreateRouteGroupMultiple(ctx context.Context, dialer snet.Dialer, biRt routing.BidirectionalRouteList) (resp routing.EdgeRulesList, err error) {
+	start := time.Now()
+	log := logging.MustGetLogger(fmt.Sprintf("request:%s->%s", biRt.Desc.SrcPK(), biRt.Desc.DstPK()))
+	log.Info("Processing request.")
+	defer func() {
+		elapsed := time.Since(start)
+		log := log.WithField("elapsed", elapsed)
+		if err != nil {
+			log.WithError(err).Warn("Request processed with error.")
+		} else {
+			log.Info("Request processed successfully.")
+		}
+	}()
+
+	// Ensure bi routes input is valid.
+	if err = biRt.Check(); err != nil {
+		return routing.EdgeRulesList{}, err
+	}
+
+	routes := append(biRt.Forward, biRt.Reverse...)
+
+	// Reserve route IDs from remote routers.
+	rtIDR, err := ReserveRouteIDs(ctx, log, dialer, routes)
+	if err != nil {
+		return routing.EdgeRulesList{}, err
+	}
+	defer func() { log.WithError(rtIDR.Close()).Debug("Closing route id reserver.") }()
+
+	// Generate forward and reverse routes.
+	fwdRt, revRt := biRt.ForwardAndReverse()
+	srcPK := biRt.Desc.SrcPK()
+	dstPK := biRt.Desc.DstPK()
+
+	// Generate routing rules (for edge and intermediary routers) that are to be sent.
+	// Rules are grouped by rule type [FWD, REV, INTER].
+	fwdRules, revRules, interRules, err := GenerateRules(rtIDR, append(fwdRt, revRt...))
+
+	if err != nil {
+		return routing.EdgeRulesList{}, err
+	}
+	initEdge := routing.EdgeRulesList{Desc: biRt.Desc.Invert(), Forward: fwdRules[srcPK], Reverse: revRules[srcPK]}
+	respEdge := routing.EdgeRulesList{Desc: biRt.Desc, Forward: fwdRules[dstPK], Reverse: revRules[dstPK]}
+
+	log.Infof("Generated routing rules:\nInitiating edge: %v\nResponding edge: %v\nIntermediaries: %v",
+		initEdge.String(), respEdge.String(), interRules.String())
+
+	// Broadcast intermediary rules to intermediary routers.
+	if err := BroadcastIntermediaryRules(ctx, log, rtIDR, interRules); err != nil {
+		return routing.EdgeRulesList{}, err
+	}
+
+	// Broadcast rules to responding router.
+	log.Debug("Broadcasting responding rules...")
+	ok, err := rtIDR.Client(biRt.Desc.DstPK()).AddEdgeRulesList(ctx, respEdge)
+	if err != nil || !ok {
+		return routing.EdgeRulesList{}, fmt.Errorf("failed to broadcast rules to destination router: %v", err)
+	}
+
+	// Return rules to initiating router.
+	return initEdge, nil
+}
+
 // ReserveRouteIDs dials to all routers and reserves required route IDs from them.
 // The number of route IDs to be reserved per router, is extrapolated from the 'route' input.
-func ReserveRouteIDs(ctx context.Context, log logrus.FieldLogger, dialer snet.Dialer, route routing.BidirectionalRoute) (idR IDReserver, err error) {
+func ReserveRouteIDs(ctx context.Context, log logrus.FieldLogger, dialer snet.Dialer, routes [][]routing.Hop) (idR IDReserver, err error) {
 	log.Debug("Reserving route IDs...")
 	defer func() {
 		if err != nil {
@@ -175,7 +244,35 @@ func ReserveRouteIDs(ctx context.Context, log logrus.FieldLogger, dialer snet.Di
 		}
 	}()
 
-	idR, err = NewIDReserver(ctx, dialer, [][]routing.Hop{route.Forward, route.Reverse})
+	idR, err = NewIDReserver(ctx, dialer, routes)
+	if err != nil {
+		return nil, fmt.Errorf("failed to instantiate route id reserver: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			log.WithError(idR.Close()).Warn("Closing router clients due to error.")
+		}
+	}()
+
+	if err = idR.ReserveIDs(ctx); err != nil {
+		return nil, fmt.Errorf("failed to reserve route ids: %w", err)
+	}
+	return idR, nil
+}
+
+// ReserveRouteIDsList dials to all routers and reserves required route IDs from them.
+// The number of route IDs to be reserved per router, is extrapolated from the 'route' input.
+func ReserveRouteIDsList(ctx context.Context, log logrus.FieldLogger, dialer snet.Dialer, route routing.BidirectionalRouteList) (idR IDReserver, err error) {
+	log.Debug("Reserving route IDs...")
+	defer func() {
+		if err != nil {
+			log.WithError(err).Warn("Failed to reserve route IDs.")
+		}
+	}()
+
+	routes := append(route.Forward, route.Reverse...)
+
+	idR, err = NewIDReserver(ctx, dialer, routes)
 	if err != nil {
 		return nil, fmt.Errorf("failed to instantiate route id reserver: %w", err)
 	}

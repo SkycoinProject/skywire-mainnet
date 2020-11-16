@@ -83,11 +83,11 @@ func (_m *MockRouter) DialRoutes(ctx context.Context, rPK cipher.PubKey, lPort r
 }
 
 // IntroduceRules provides a mock function with given fields: rules
-func (_m *MockRouter) IntroduceRules(rules routing.EdgeRules) error {
+func (_m *MockRouter) IntroduceRules(rules routing.EdgeRulesList) error {
 	ret := _m.Called(rules)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(routing.EdgeRules) error); ok {
+	if rf, ok := ret.Get(0).(func(routing.EdgeRulesList) error); ok {
 		r0 = rf(rules)
 	} else {
 		r0 = ret.Error(0)

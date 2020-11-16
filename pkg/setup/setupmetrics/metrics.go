@@ -11,7 +11,8 @@ import (
 // Metrics collects metrics for prometheus.
 type Metrics interface {
 	Collectors() []prometheus.Collector
-	RecordRequest(routing.BidirectionalRoute) func(*routing.EdgeRules, *error)
+	RecordRouteRequest(routing.BidirectionalRoute) func(*routing.EdgeRules, *error)
+	RecordRouteListRequest(routing.BidirectionalRouteList) func(*routing.EdgeRulesList, *error)
 }
 
 // New returns the default implementation of Metrics.
@@ -45,11 +46,28 @@ func (m *metrics) Collectors() []prometheus.Collector {
 	}
 }
 
-func (m *metrics) RecordRequest(_ routing.BidirectionalRoute) func(rules *routing.EdgeRules, err *error) {
+func (m *metrics) RecordRouteRequest(_ routing.BidirectionalRoute) func(rules *routing.EdgeRules, err *error) {
 	start := time.Now()
 	m.activeRequests.Inc()
 
 	return func(rules *routing.EdgeRules, err *error) {
+		successStr := "true"
+		if *err != nil {
+			successStr = "false"
+		}
+		labels := prometheus.Labels{
+			"success": successStr,
+		}
+		m.reqDurations.With(labels).Observe(float64(time.Since(start)))
+		m.activeRequests.Dec()
+	}
+}
+
+func (m *metrics) RecordRouteListRequest(_ routing.BidirectionalRouteList) func(rules *routing.EdgeRulesList, err *error) {
+	start := time.Now()
+	m.activeRequests.Inc()
+
+	return func(rules *routing.EdgeRulesList, err *error) {
 		successStr := "true"
 		if *err != nil {
 			successStr = "false"

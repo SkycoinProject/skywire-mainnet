@@ -58,6 +58,13 @@ func (c *Client) AddEdgeRules(ctx context.Context, rules routing.EdgeRules) (ok 
 	return ok, err
 }
 
+// AddEdgeRulesList adds forward and consume rules list to router (forward and reverse).
+func (c *Client) AddEdgeRulesList(ctx context.Context, rules routing.EdgeRulesList) (ok bool, err error) {
+	const method = "AddEdgeRules" // works as AddEdgeRulesList on newer versions of router
+	err = c.call(ctx, method, rules, &ok)
+	return ok, err
+}
+
 // AddIntermediaryRules adds intermediary rules to router.
 func (c *Client) AddIntermediaryRules(ctx context.Context, rules []routing.Rule) (ok bool, err error) {
 	const method = "AddIntermediaryRules"

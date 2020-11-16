@@ -78,7 +78,7 @@ func TestCreateRouteGroup(t *testing.T) {
 			biRt := biRouteFromKeys(tc.fwdPKs, tc.revPKs, tc.SrcPort, tc.DstPort)
 
 			// act
-			resp, err := CreateRouteGroup(context.TODO(), dialer, biRt)
+			resp, err := CreateRouteGroupMultiple(context.TODO(), dialer, biRt)
 			if err == nil {
 				// if successful, inject response (response edge rules) to responding router
 				var ok bool
@@ -116,7 +116,7 @@ func checkRtIDKeysOfRouterRules(t *testing.T, r *mockRouterGateway) {
 	var rtIDKeys []routing.RouteID
 
 	for _, edge := range r.edgeRules {
-		rtIDKeys = append(rtIDKeys, edge.Forward.KeyRouteID(), edge.Reverse.KeyRouteID())
+		rtIDKeys = append(rtIDKeys, edge.Forward[0].KeyRouteID(), edge.Reverse[0].KeyRouteID())
 	}
 	for _, rules := range r.interRules {
 		for _, rule := range rules {
@@ -145,7 +145,7 @@ func countUniquePKs(pks []cipher.PubKey) int {
 	return len(m)
 }
 
-func biRouteFromKeys(fwdPKs, revPKs []cipher.PubKey, srcPort, dstPort routing.Port) routing.BidirectionalRoute {
+func biRouteFromKeys(fwdPKs, revPKs []cipher.PubKey, srcPort, dstPort routing.Port) routing.BidirectionalRouteList {
 	fwdHops := make([]routing.Hop, len(fwdPKs)-1)
 	for i, srcPK := range fwdPKs[:len(fwdPKs)-1] {
 		dstPK := fwdPKs[i+1]
@@ -160,11 +160,11 @@ func biRouteFromKeys(fwdPKs, revPKs []cipher.PubKey, srcPort, dstPort routing.Po
 
 	// TODO: This should also return a map of format: map[uuid.UUID][]cipher.PubKey
 	// This way, we can associate transport IDs to the two transport edges, allowing for more checks.
-	return routing.BidirectionalRoute{
+	return routing.BidirectionalRouteList{
 		Desc:      routing.NewRouteDescriptor(fwdPKs[0], revPKs[0], srcPort, dstPort),
 		KeepAlive: 0,
-		Forward:   fwdHops,
-		Reverse:   revHops,
+		Forward:   [][]routing.Hop{fwdHops},
+		Reverse:   [][]routing.Hop{revHops},
 	}
 }
 
@@ -187,10 +187,10 @@ func determineTpID(pk1, pk2 cipher.PubKey) (tpID uuid.UUID) {
 // mockRouterGateway mocks router.RPCGateway and has an internal state machine that records all remote calls.
 // mockRouterGateway acts as a well behaved router, and no error will be returned on any of it's endpoints.
 type mockRouterGateway struct {
-	pk         cipher.PubKey       // router's public key
-	lastRtID   uint32              // last route ID that was reserved (the first returned rtID would be 1 if this starts as 0).
-	edgeRules  []routing.EdgeRules // edge rules added by remote.
-	interRules [][]routing.Rule    // intermediary rules added by remote.
+	pk         cipher.PubKey           // router's public key
+	lastRtID   uint32                  // last route ID that was reserved (the first returned rtID would be 1 if this starts as 0).
+	edgeRules  []routing.EdgeRulesList // edge rules added by remote.
+	interRules [][]routing.Rule        // intermediary rules added by remote.
 	mx         sync.Mutex
 }
 
@@ -198,7 +198,7 @@ func newMockRouterGateway(pk cipher.PubKey) *mockRouterGateway {
 	return &mockRouterGateway{pk: pk}
 }
 
-func (gw *mockRouterGateway) AddEdgeRules(rules routing.EdgeRules, ok *bool) error {
+func (gw *mockRouterGateway) AddEdgeRules(rules routing.EdgeRulesList, ok *bool) error {
 	gw.mx.Lock()
 	defer gw.mx.Unlock()
 
@@ -351,7 +351,7 @@ func randRulesMap(pks []cipher.PubKey) RulesMap {
 
 func randIntermediaryRules(n int) []routing.Rule {
 	const keepAlive = time.Second
-	randRtID := func() routing.RouteID { return routing.RouteID(rand.Uint32()) } // nolint:gosec
+	randRtID := func() routing.RouteID { return routing.RouteID(rand.Uint32()) } // nolint: gosec
 
 	out := make([]routing.Rule, n)
 	for i := range out {

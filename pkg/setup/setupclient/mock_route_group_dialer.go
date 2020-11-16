@@ -19,18 +19,18 @@ type MockRouteGroupDialer struct {
 }
 
 // Dial provides a mock function with given fields: ctx, log, n, setupNodes, req
-func (_m *MockRouteGroupDialer) Dial(ctx context.Context, log *logging.Logger, n *snet.Network, setupNodes []cipher.PubKey, req routing.BidirectionalRoute) (routing.EdgeRules, error) {
+func (_m *MockRouteGroupDialer) Dial(ctx context.Context, log *logging.Logger, n *snet.Network, setupNodes []cipher.PubKey, req routing.BidirectionalRouteList) (routing.EdgeRulesList, error) {
 	ret := _m.Called(ctx, log, n, setupNodes, req)
 
-	var r0 routing.EdgeRules
-	if rf, ok := ret.Get(0).(func(context.Context, *logging.Logger, *snet.Network, []cipher.PubKey, routing.BidirectionalRoute) routing.EdgeRules); ok {
+	var r0 routing.EdgeRulesList
+	if rf, ok := ret.Get(0).(func(context.Context, *logging.Logger, *snet.Network, []cipher.PubKey, routing.BidirectionalRouteList) routing.EdgeRulesList); ok {
 		r0 = rf(ctx, log, n, setupNodes, req)
 	} else {
-		r0 = ret.Get(0).(routing.EdgeRules)
+		r0 = ret.Get(0).(routing.EdgeRulesList)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, *logging.Logger, *snet.Network, []cipher.PubKey, routing.BidirectionalRoute) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *logging.Logger, *snet.Network, []cipher.PubKey, routing.BidirectionalRouteList) error); ok {
 		r1 = rf(ctx, log, n, setupNodes, req)
 	} else {
 		r1 = ret.Error(1)

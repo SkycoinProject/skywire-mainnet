@@ -68,9 +68,6 @@ func DefaultRouteGroupConfig() *RouteGroupConfig {
 // RouteGroup should implement 'io.ReadWriteCloser'.
 // It implements 'net.Conn'.
 type RouteGroup struct {
-	// atomic requires 64-bit alignment for struct field access
-	lastSent int64
-
 	mu sync.Mutex
 
 	cfg    *RouteGroupConfig
@@ -92,7 +89,6 @@ type RouteGroup struct {
 	// - the corresponding element of tps should have tpID of the corresponding rule in fwd.
 	// - fwd references 'ForwardRule' rules for writes.
 	fwd []routing.Rule // forward rules (for writing)
-	rvs []routing.Rule // reverse rules (for reading)
 
 	// 'readCh' reads in incoming packets of this route group.
 	// - Router should serve call '(*transport.Manager).ReadPacket' in a loop,
@@ -114,6 +110,9 @@ type RouteGroup struct {
 	// used to wait for all the `Close` packets to run through the loop and come back
 	closeDone sync.WaitGroup
 	once      sync.Once
+
+	lastSentMu sync.RWMutex
+	lastSent   map[routing.RouteID]int64
 }
 
 // NewRouteGroup creates a new RouteGroup.
@@ -129,13 +128,13 @@ func NewRouteGroup(cfg *RouteGroupConfig, rt routing.Table, desc routing.RouteDe
 		rt:                 rt,
 		tps:                make([]*transport.ManagedTransport, 0),
 		fwd:                make([]routing.Rule, 0),
-		rvs:                make([]routing.Rule, 0),
 		readCh:             make(chan []byte, cfg.ReadChBufSize),
 		readBuf:            bytes.Buffer{},
 		remoteClosed:       make(chan struct{}),
 		closed:             make(chan struct{}),
 		readDeadline:       deadline.MakePipeDeadline(),
 		writeDeadline:      deadline.MakePipeDeadline(),
+		lastSent:           make(map[routing.RouteID]int64),
 		handshakeProcessed: make(chan struct{}),
 		networkStats:       newNetworkStats(),
 	}
@@ -177,22 +176,40 @@ func (rg *RouteGroup) Write(p []byte) (n int, err error) {
 		return 0, nil
 	}
 
-	rg.mu.Lock()
-	tp, err := rg.tp()
-	if err != nil {
-		rg.mu.Unlock()
-		return 0, err
+	if len(rg.tps) == 0 {
+		return 0, ErrNoTransports
 	}
 
-	rule, err := rg.rule()
-	if err != nil {
-		rg.mu.Unlock()
-		return 0, err
+	if len(rg.fwd) == 0 {
+		return 0, ErrNoRules
 	}
-	// we don't need to keep holding mutex from this point on
-	rg.mu.Unlock()
 
-	return rg.write(p, tp, rule)
+	if len(rg.tps) != len(rg.fwd) {
+		return 0, ErrRuleTransportMismatch
+	}
+
+	for i := range rg.tps {
+		rule := rg.fwd[i]
+		tp := rg.tps[i]
+
+		if tp == nil {
+			rg.logger.Infof("Bad transport at index %v, using the next one", i)
+			continue
+		}
+
+		rg.logger.Debug("Attempting to use TP %v (%v -> %v) (%v of %v) for writing",
+			tp.Entry.ID, tp.Entry.Edges[0], tp.Entry.Edges[1], i+1, len(rg.tps))
+
+		n, err := rg.write(p, tp, rule)
+		if err == nil {
+			return n, nil
+		}
+
+		rg.logger.Infof("Failed to write to transport %v: %v", tp.Entry.ID, err)
+	}
+
+	rg.logger.Infof("Failed to write to any existing transport")
+	return 0, ErrBadTransport
 }
 
 // Close closes a RouteGroup.
@@ -322,7 +339,9 @@ func (rg *RouteGroup) write(data []byte, tp *transport.ManagedTransport, rule ro
 			return 0, err
 		}
 
-		atomic.StoreInt64(&rg.lastSent, time.Now().UnixNano())
+		rg.lastSentMu.Lock()
+		rg.lastSent[rule.KeyRouteID()] = time.Now().UnixNano()
+		rg.lastSentMu.Unlock()
 
 		return len(data), nil
 	}
@@ -330,7 +349,7 @@ func (rg *RouteGroup) write(data []byte, tp *transport.ManagedTransport, rule ro
 
 func (rg *RouteGroup) writePacketAsync(ctx context.Context, tp *transport.ManagedTransport, packet routing.Packet,
 	ruleID routing.RouteID) chan error {
-	errCh := make(chan error)
+	errCh := make(chan error, 1)
 	go func() {
 		defer close(errCh)
 		err := rg.writePacket(ctx, tp, packet, ruleID)
@@ -360,34 +379,6 @@ func (rg *RouteGroup) writePacket(ctx context.Context, tp *transport.ManagedTran
 	}
 
 	return err
-}
-
-// rule fetches first available forward rule.
-// NOTE: not thread-safe.
-func (rg *RouteGroup) rule() (routing.Rule, error) {
-	if len(rg.fwd) == 0 {
-		return nil, ErrNoRules
-	}
-
-	rule := rg.fwd[0]
-
-	return rule, nil
-}
-
-// tp fetches first available transport.
-// NOTE: not thread-safe.
-func (rg *RouteGroup) tp() (*transport.ManagedTransport, error) {
-	if len(rg.tps) == 0 {
-		return nil, ErrNoTransports
-	}
-
-	tp := rg.tps[0]
-
-	if tp == nil {
-		return nil, ErrBadTransport
-	}
-
-	return tp, nil
 }
 
 func (rg *RouteGroup) startOffServiceLoops() {
@@ -446,18 +437,12 @@ func (rg *RouteGroup) servicePacketLoop(name string, interval time.Duration, f s
 }
 
 func (rg *RouteGroup) keepAliveServiceFn(interval time.Duration) {
-	lastSent := time.Unix(0, atomic.LoadInt64(&rg.lastSent))
-
-	if time.Since(lastSent) < interval {
-		return
-	}
-
-	if err := rg.sendKeepAlive(); err != nil {
+	if err := rg.sendKeepAlive(interval); err != nil {
 		rg.logger.Warnf("Failed to send keepalive: %v", err)
 	}
 }
 
-func (rg *RouteGroup) sendKeepAlive() error {
+func (rg *RouteGroup) sendKeepAlive(interval time.Duration) error {
 	rg.mu.Lock()
 	defer rg.mu.Unlock()
 
@@ -468,9 +453,18 @@ func (rg *RouteGroup) sendKeepAlive() error {
 
 	for i := 0; i < len(rg.tps); i++ {
 		tp := rg.tps[i]
-		rule := rg.fwd[i]
 
 		if tp == nil {
+			continue
+		}
+
+		rule := rg.fwd[i]
+
+		rg.lastSentMu.RLock()
+		lastSent := time.Unix(0, rg.lastSent[rule.KeyRouteID()])
+		rg.lastSentMu.RUnlock()
+
+		if time.Since(lastSent) < interval {
 			continue
 		}
 
@@ -692,13 +686,11 @@ func (rg *RouteGroup) isClosed() bool {
 	return chanClosed(rg.closed)
 }
 
-func (rg *RouteGroup) appendRules(forward, reverse routing.Rule, tp *transport.ManagedTransport) {
+func (rg *RouteGroup) appendRules(forward, _ routing.Rule, tp *transport.ManagedTransport) {
 	rg.mu.Lock()
 	defer rg.mu.Unlock()
 
 	rg.fwd = append(rg.fwd, forward)
-	rg.rvs = append(rg.rvs, reverse)
-
 	rg.tps = append(rg.tps, tp)
 }
 

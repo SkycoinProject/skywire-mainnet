@@ -37,10 +37,10 @@ func TestClient_AddEdgeRules(t *testing.T) {
 
 	desc := routing.NewRouteDescriptor(srcPK, dstPK, srcPort, dstPort)
 
-	rules := routing.EdgeRules{
+	rules := routing.EdgeRulesList{
 		Desc:    desc,
-		Forward: routing.Rule{0, 0, 0},
-		Reverse: routing.Rule{1, 1, 1},
+		Forward: []routing.Rule{{0, 0, 0}},
+		Reverse: []routing.Rule{{1, 1, 1}},
 	}
 
 	r := &router.MockRouter{}
@@ -50,7 +50,7 @@ func TestClient_AddEdgeRules(t *testing.T) {
 	_, cl, cleanup := prepRPCServerAndClient(t, r)
 	defer cleanup()
 
-	ok, err := cl.AddEdgeRules(context.Background(), rules)
+	ok, err := cl.AddEdgeRulesList(context.Background(), rules)
 	require.NoError(t, err)
 	require.True(t, ok)
 }

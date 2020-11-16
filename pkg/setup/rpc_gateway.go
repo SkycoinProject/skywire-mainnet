@@ -26,7 +26,7 @@ type RPCGateway struct {
 // DialRouteGroup dials RouteGroups for route and rules.
 func (g *RPCGateway) DialRouteGroup(route routing.BidirectionalRoute, rules *routing.EdgeRules) (err error) {
 	log := logging.MustGetLogger("request:" + g.ReqPK.String())
-	defer g.Metrics.RecordRequest(route)(rules, &err)
+	defer g.Metrics.RecordRouteRequest(route)(rules, &err)
 
 	ctx, cancel := context.WithTimeout(g.Ctx, g.Timeout)
 	defer cancel()
@@ -39,6 +39,31 @@ func (g *RPCGateway) DialRouteGroup(route routing.BidirectionalRoute, rules *rou
 	}()
 
 	initRules, err := CreateRouteGroup(ctx, g.Dialer, route)
+	if err != nil {
+		return err
+	}
+
+	// Confirm routes with initiating visor.
+	*rules = initRules
+	return nil
+}
+
+// DialRouteGroupMultiple dials RouteGroups for list of routes and rules.
+func (g *RPCGateway) DialRouteGroupMultiple(route routing.BidirectionalRouteList, rules *routing.EdgeRulesList) (err error) {
+	log := logging.MustGetLogger("request:" + g.ReqPK.String())
+	defer g.Metrics.RecordRouteListRequest(route)(rules, &err)
+
+	ctx, cancel := context.WithTimeout(g.Ctx, g.Timeout)
+	defer cancel()
+	go func() {
+		if <-ctx.Done(); ctx.Err() == context.DeadlineExceeded {
+			log.WithError(ctx.Err()).
+				WithField("close_error", g.Conn.Close()).
+				Warn("Closed underlying connection because deadline was exceeded.")
+		}
+	}()
+
+	initRules, err := CreateRouteGroupMultiple(ctx, g.Dialer, route)
 	if err != nil {
 		return err
 	}

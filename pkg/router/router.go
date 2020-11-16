@@ -120,7 +120,7 @@ type Router interface {
 	AcceptRoutes(context.Context) (net.Conn, error)
 	SaveRoutingRules(rules ...routing.Rule) error
 	ReserveKeys(n int) ([]routing.RouteID, error)
-	IntroduceRules(rules routing.EdgeRules) error
+	IntroduceRules(rules routing.EdgeRulesList) error
 	Serve(context.Context) error
 	SetupIsTrusted(cipher.PubKey) bool
 
@@ -147,7 +147,7 @@ type router struct {
 	rgsNs         map[routing.RouteDescriptor]*NoiseRouteGroup // Noise-wrapped route groups to push incoming reads from transports.
 	rgsRaw        map[routing.RouteDescriptor]*RouteGroup      // Not-yet-noise-wrapped route groups. when one of these gets wrapped, it gets removed from here
 	rpcSrv        *rpc.Server
-	accept        chan routing.EdgeRules
+	accept        chan routing.EdgeRulesList
 	done          chan struct{}
 	wg            sync.WaitGroup
 	once          sync.Once
@@ -177,7 +177,7 @@ func New(n *snet.Network, config *Config) (Router, error) {
 		rgsNs:         make(map[routing.RouteDescriptor]*NoiseRouteGroup),
 		rgsRaw:        make(map[routing.RouteDescriptor]*RouteGroup),
 		rpcSrv:        rpc.NewServer(),
-		accept:        make(chan routing.EdgeRules, acceptSize),
+		accept:        make(chan routing.EdgeRulesList, acceptSize),
 		done:          make(chan struct{}),
 		trustedVisors: trustedVisors,
 	}
@@ -220,7 +220,7 @@ func (r *router) DialRoutes(
 		return nil, fmt.Errorf("route finder: %w", err)
 	}
 
-	req := routing.BidirectionalRoute{
+	req := routing.BidirectionalRouteList{
 		Desc:      forwardDesc,
 		KeepAlive: DefaultRouteKeepAlive,
 		Forward:   forwardPath,
@@ -233,7 +233,8 @@ func (r *router) DialRoutes(
 		return nil, err
 	}
 
-	if err := r.SaveRoutingRules(rules.Forward, rules.Reverse); err != nil {
+	rulesList := append(rules.Forward, rules.Reverse...)
+	if err := r.SaveRoutingRules(rulesList...); err != nil {
 		r.logger.WithError(err).Error("Error saving routing rules")
 		return nil, err
 	}
@@ -264,7 +265,7 @@ func (r *router) DialRoutes(
 // - Return the RoutingGroup.
 func (r *router) AcceptRoutes(ctx context.Context) (net.Conn, error) {
 	var (
-		rules routing.EdgeRules
+		rules routing.EdgeRulesList
 		ok    bool
 	)
 
@@ -285,7 +286,8 @@ func (r *router) AcceptRoutes(ctx context.Context) (net.Conn, error) {
 		return nil, err
 	}
 
-	if err := r.SaveRoutingRules(rules.Forward, rules.Reverse); err != nil {
+	rulesList := append(rules.Forward, rules.Reverse...)
+	if err := r.SaveRoutingRules(rulesList...); err != nil {
 		return nil, fmt.Errorf("SaveRoutingRules: %w", err)
 	}
 
@@ -372,7 +374,7 @@ func (r *router) serveSetup() {
 	}
 }
 
-func (r *router) saveRouteGroupRules(rules routing.EdgeRules, nsConf noise.Config) (*NoiseRouteGroup, error) {
+func (r *router) saveRouteGroupRules(rules routing.EdgeRulesList, nsConf noise.Config) (*NoiseRouteGroup, error) {
 	r.logger.Infof("Saving route group rules with desc: %s", &rules.Desc)
 
 	// When route group is wrapped with noise, it's put into `nrgs`. but before that,
@@ -394,7 +396,11 @@ func (r *router) saveRouteGroupRules(rules routing.EdgeRules, nsConf noise.Confi
 
 	r.logger.Infof("Creating new route group rule with desc: %s", &rules.Desc)
 	rg := NewRouteGroup(DefaultRouteGroupConfig(), r.rt, rules.Desc)
-	rg.appendRules(rules.Forward, rules.Reverse, r.tm.Transport(rules.Forward.NextTransportID()))
+
+	for i := range rules.Forward {
+		rg.appendRules(rules.Forward[i], rules.Reverse[i], r.tm.Transport(rules.Forward[i].NextTransportID()))
+	}
+
 	// we put raw rg so it can be accessible to the router when handshake packets come in
 	r.rgsRaw[rules.Desc] = rg
 	r.mx.Unlock()
@@ -809,7 +815,7 @@ func (r *router) RemoveRouteDescriptor(desc routing.RouteDescriptor) {
 	}
 }
 
-func (r *router) fetchBestRoutes(src, dst cipher.PubKey, opts *DialOptions) (fwd, rev []routing.Hop, err error) {
+func (r *router) fetchBestRoutes(src, dst cipher.PubKey, opts *DialOptions) (fwd, rev [][]routing.Hop, err error) {
 	// TODO(nkryuchkov): use opts
 	if opts == nil {
 		opts = DefaultDialOptions() // nolint
@@ -845,7 +851,7 @@ fetchRoutesAgain:
 
 	r.logger.Infof("Found routes Forward: %s. Reverse %s", paths[forward], paths[backward])
 
-	return paths[forward][0], paths[backward][0], nil
+	return paths[forward], paths[backward], nil
 }
 
 // SetupIsTrusted checks if setup node is trusted.
@@ -916,7 +922,7 @@ func (r *router) removeNoiseRouteGroup(desc routing.RouteDescriptor) {
 	delete(r.rgsNs, desc)
 }
 
-func (r *router) IntroduceRules(rules routing.EdgeRules) error {
+func (r *router) IntroduceRules(rules routing.EdgeRulesList) error {
 	select {
 	case <-r.done:
 		return io.ErrClosedPipe

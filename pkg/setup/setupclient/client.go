@@ -76,10 +76,10 @@ func (c *Client) Close() error {
 	return nil
 }
 
-// DialRouteGroup generates rules for routes from a visor and sends them to visors.
-func (c *Client) DialRouteGroup(ctx context.Context, req routing.BidirectionalRoute) (routing.EdgeRules, error) {
-	var resp routing.EdgeRules
-	err := c.call(ctx, rpcName+".DialRouteGroup", req, &resp)
+// DialRouteGroupMultiple generates rules for routes from a visor and sends them to visors.
+func (c *Client) DialRouteGroupMultiple(ctx context.Context, req routing.BidirectionalRouteList) (routing.EdgeRulesList, error) {
+	var resp routing.EdgeRulesList
+	err := c.call(ctx, rpcName+".DialRouteGroupMultiple", req, &resp)
 
 	return resp, err
 }

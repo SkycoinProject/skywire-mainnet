@@ -16,6 +16,9 @@ type empty struct{}
 func (empty) Collectors() []prometheus.Collector {
 	return nil
 }
-func (empty) RecordRequest(routing.BidirectionalRoute) func(*routing.EdgeRules, *error) {
+func (empty) RecordRouteRequest(routing.BidirectionalRoute) func(*routing.EdgeRules, *error) {
 	return func(*routing.EdgeRules, *error) {}
+}
+func (empty) RecordRouteListRequest(routing.BidirectionalRouteList) func(*routing.EdgeRulesList, *error) {
+	return func(*routing.EdgeRulesList, *error) {}
 }
