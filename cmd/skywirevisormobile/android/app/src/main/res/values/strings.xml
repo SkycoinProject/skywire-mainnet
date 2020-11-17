@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connecting">SkywireVPN is connecting…</string>
+    <string name="connected">SkywireVPN is connected!</string>
+    <string name="disconnected">SkywireVPN is disconnected!</string>
+</resources>

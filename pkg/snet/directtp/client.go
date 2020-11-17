@@ -57,7 +57,7 @@ type Client interface {
 	Dial(ctx context.Context, rPK cipher.PubKey, rPort uint16) (*tpconn.Conn, error)
 	Listen(lPort uint16) (*tplistener.Listener, error)
 	LocalAddr() (net.Addr, error)
-	Serve() error
+	Serve(ctx context.Context) error
 	Close() error
 	Type() string
 }
@@ -107,7 +107,7 @@ func NewClient(conf Config) Client {
 }
 
 // Serve serves the listening portion of the client.
-func (c *client) Serve() error {
+func (c *client) Serve(ctx context.Context) error {
 	switch c.conf.Type {
 	case tptypes.STCP, tptypes.STCPR:
 		if c.listener != nil {
@@ -137,7 +137,7 @@ func (c *client) Serve() error {
 				return
 			}
 
-			if err := c.conf.AddressResolver.BindSTCPR(context.Background(), port); err != nil {
+			if err := c.conf.AddressResolver.BindSTCPR(ctx, port); err != nil {
 				c.log.Errorf("Failed to bind STCPR: %v", err)
 				return
 			}
@@ -146,6 +146,12 @@ func (c *client) Serve() error {
 		c.log.Infof("listening on addr: %v", c.listener.Addr())
 
 		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+
 			if err := c.acceptConn(); err != nil {
 				if strings.Contains(err.Error(), io.EOF.Error()) {
 					continue // likely it's a dummy connection from service discovery

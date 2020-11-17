@@ -786,8 +786,6 @@ func NewTestEnv(t *testing.T, nets []*snet.Network) *TestEnv {
 	ms := make([]*transport.Manager, len(nets))
 
 	for i, n := range nets {
-		var err error
-
 		mConfs[i] = &transport.ManagerConfig{
 			PubKey:          n.LocalPK(),
 			SecKey:          n.LocalSK(),
@@ -795,8 +793,7 @@ func NewTestEnv(t *testing.T, nets []*snet.Network) *TestEnv {
 			LogStore:        transport.InMemoryTransportLogStore(),
 		}
 
-		ms[i], err = transport.NewManager(nil, n, mConfs[i])
-		require.NoError(t, err)
+		ms[i] = transport.NewManager(nil, n, mConfs[i])
 
 		go ms[i].Serve(context.TODO())
 	}

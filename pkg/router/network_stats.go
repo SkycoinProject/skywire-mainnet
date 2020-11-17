@@ -44,6 +44,10 @@ func (s *networkStats) BandwidthSent() uint64 {
 	return atomic.LoadUint64(&s.bandwidthSent)
 }
 
+func (s *networkStats) BandwidthReceived() uint64 {
+	return atomic.LoadUint64(&s.bandwidthReceived)
+}
+
 func (s *networkStats) AddBandwidthSent(amount uint64) {
 	atomic.AddUint64(&s.bandwidthSent, amount)
 }

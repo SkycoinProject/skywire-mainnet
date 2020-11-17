@@ -41,3 +41,11 @@ dist
 
 # release
 *.deb
+
+# android
+cmd/skywirevisormobile/android/app/build/outputs/apk/debug/app-debug.apk
+cmd/skywirevisormobile/android/app/skywire.aar
+cmd/skywirevisormobile/android/app/skywire-sources.jar
+cmd/skywirevisormobile/android/app/.idea
+cmd/skywirevisormobile/android/app/build
+cmd/skywirevisormobile/android/.gradle

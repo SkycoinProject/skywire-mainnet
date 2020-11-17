@@ -23,6 +23,7 @@ const (
 // Client is a VPN client.
 type Client struct {
 	cfg            ClientConfig
+	log            logrus.FieldLogger
 	conn           net.Conn
 	directIPSMu    sync.Mutex
 	directIPs      []net.IP
@@ -88,6 +89,7 @@ func NewClient(cfg ClientConfig, l logrus.FieldLogger, conn net.Conn) (*Client, 
 
 	return &Client{
 		cfg:            cfg,
+		log:            l,
 		conn:           conn,
 		directIPs:      filterOutEqualIPs(directIPs),
 		defaultGateway: defaultGateway,
@@ -174,7 +176,8 @@ func (c *Client) Serve() error {
 
 	fmt.Printf("Allocated TUN %s: %v\n", tun.Name(), err)
 
-	if err := SetupTUN(tun.Name(), tunIP.String()+TUNNetmaskCIDR, tunGateway.String(), TUNMTU); err != nil {
+	err = SetupTUN(tun.Name(), tunIP.String()+"/"+strconv.Itoa(TUNNetmaskPrefix), tunGateway.String(), TUNMTU)
+	if err != nil {
 		return fmt.Errorf("error setting up TUN %s: %w", tun.Name(), err)
 	}
 
@@ -423,24 +426,7 @@ func (c *Client) shakeHands() (TUNIP, TUNGateway net.IP, err error) {
 		Passcode:              c.cfg.Passcode,
 	}
 
-	fmt.Printf("Sending client hello: %v\n", cHello)
-
-	if err := WriteJSON(c.conn, &cHello); err != nil {
-		return nil, nil, fmt.Errorf("error sending client hello: %w", err)
-	}
-
-	var sHello ServerHello
-	if err := ReadJSON(c.conn, &sHello); err != nil {
-		return nil, nil, fmt.Errorf("error reading server hello: %w", err)
-	}
-
-	fmt.Printf("Got server hello: %v", sHello)
-
-	if sHello.Status != HandshakeStatusOK {
-		return nil, nil, fmt.Errorf("got status %d (%s) from the server", sHello.Status, sHello.Status)
-	}
-
-	return sHello.TUNIP, sHello.TUNGateway, nil
+	return DoClientHandshake(c.log, c.conn, cHello)
 }
 
 func (c *Client) releaseSysPrivileges(suid int) {
@@ -474,5 +460,4 @@ func filterOutEqualIPs(ips []net.IP) []net.IP {
 	}
 
 	return filteredIPs
-
 }

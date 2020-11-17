@@ -17,7 +17,6 @@ import (
 	"github.com/skycoin/dmsg/cipher"
 
 	"github.com/skycoin/skywire/pkg/app/appcommon"
-	"github.com/skycoin/skywire/pkg/app/appnet"
 	"github.com/skycoin/skywire/pkg/app/appserver"
 	"github.com/skycoin/skywire/pkg/router"
 	"github.com/skycoin/skywire/pkg/routing"
@@ -75,16 +74,6 @@ func NewLauncher(log logrus.FieldLogger, conf Config, dmsgC *dmsg.Client, r rout
 		return nil, err
 	}
 	if err := ensureDir(&launcher.conf.LocalPath); err != nil {
-		return nil, err
-	}
-
-	// Prepare networks.
-	skyN := appnet.NewSkywireNetworker(log.WithField("_", appnet.TypeSkynet), r)
-	if err := appnet.AddNetworker(appnet.TypeSkynet, skyN); err != nil {
-		return nil, err
-	}
-	dmsgN := appnet.NewDMSGNetworker(dmsgC)
-	if err := appnet.AddNetworker(appnet.TypeDmsg, dmsgN); err != nil {
 		return nil, err
 	}
 

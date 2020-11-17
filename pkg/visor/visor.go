@@ -2,6 +2,7 @@
 package visor
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"path/filepath"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
+	"github.com/skycoin/dmsg/cipher"
 	"github.com/skycoin/skycoin/src/util/logging"
 
 	"github.com/skycoin/skywire/internal/utclient"
@@ -74,12 +76,12 @@ type vReport struct {
 	err error
 }
 
-type reportFunc func(err error) bool
+type reportFunc func(err error) error
 
 func (v *Visor) makeReporter(src string) reportFunc {
-	return func(err error) bool {
+	return func(err error) error {
 		v.reportCh <- vReport{src: src, err: err}
-		return err == nil
+		return err
 	}
 }
 
@@ -105,10 +107,10 @@ func (v *Visor) processReports(log logrus.FieldLogger, ok *bool) {
 
 type closeElem struct {
 	src string
-	fn  func() bool
+	fn  func() error
 }
 
-func (v *Visor) pushCloseStack(src string, fn func() bool) {
+func (v *Visor) pushCloseStack(src string, fn func() error) {
 	v.closeStack = append(v.closeStack, closeElem{src: src, fn: fn})
 }
 
@@ -118,10 +120,8 @@ func (v *Visor) MasterLogger() *logging.MasterLogger {
 }
 
 // NewVisor constructs new Visor.
-func NewVisor(conf *visorconfig.V1, restartCtx *restart.Context) (v *Visor, ok bool) {
-	ok = true
-
-	v = &Visor{
+func NewVisor(conf *visorconfig.V1, restartCtx *restart.Context) *Visor {
+	v := &Visor{
 		reportCh:   make(chan vReport, 100),
 		log:        conf.MasterLogger().PackageLogger("visor"),
 		conf:       conf,
@@ -135,12 +135,25 @@ func NewVisor(conf *visorconfig.V1, restartCtx *restart.Context) (v *Visor, ok b
 		logging.SetLevel(logLvl)
 	}
 
-	log := v.MasterLogger().PackageLogger("visor:startup")
-	log.WithField("public_key", conf.PK).
-		Info("Begin startup.")
 	v.startedAt = time.Now()
 
+	return v
+}
+
+// Start starts visor.
+func (v *Visor) Start(ctx context.Context) error {
+	log := v.MasterLogger().PackageLogger("visor:startup")
+	log.WithField("public_key", v.conf.PK).
+		Info("Begin startup.")
+
 	for i, startFn := range initStack() {
+		select {
+		// quit immediately if startup was interrupted
+		case <-ctx.Done():
+			return nil
+		default:
+		}
+
 		name := strings.ToLower(strings.TrimPrefix(filepath.Base(runtime.FuncForPC(reflect.ValueOf(startFn).Pointer()).Name()), "visor.init"))
 		start := time.Now()
 
@@ -148,28 +161,40 @@ func NewVisor(conf *visorconfig.V1, restartCtx *restart.Context) (v *Visor, ok b
 			WithField("func", fmt.Sprintf("[%d/%d]", i+1, len(initStack())))
 		log.Info("Starting module...")
 
-		if ok := startFn(v); !ok {
+		if err := startFn(ctx, v); err != nil {
 			log.WithField("elapsed", time.Since(start)).Error("Failed to start module.")
 			v.processReports(log, nil)
-			return v, ok
+			return err
 		}
 
 		log.WithField("elapsed", time.Since(start)).Info("Module started successfully.")
 	}
 
+	ok := true
 	if v.processReports(log, &ok); !ok {
 		log.Error("Failed to startup visor.")
-		return v, ok
+		return errors.New("failed to startup visor")
 	}
 
 	log.Info("Startup complete!")
-	return v, ok
+
+	return nil
+}
+
+// Network returns skywire network.
+func (v *Visor) Network() *snet.Network {
+	return v.net
+}
+
+// SaveTransport saves transport to `remote`.
+func (v *Visor) SaveTransport(ctx context.Context, remote cipher.PubKey, tpType string) (*transport.ManagedTransport, error) {
+	return v.tpM.SaveTransport(ctx, remote, tpType)
 }
 
 // Close safely stops spawned Apps and Visor.
-func (v *Visor) Close() error {
+func (v *Visor) Close() {
 	if v == nil {
-		return nil
+		return
 	}
 
 	log := v.MasterLogger().PackageLogger("visor:shutdown")
@@ -179,7 +204,7 @@ func (v *Visor) Close() error {
 		ce := v.closeStack[i]
 
 		start := time.Now()
-		done := make(chan bool, 1)
+		done := make(chan error, 1)
 		t := time.NewTimer(moduleShutdownTimeout)
 
 		log := v.MasterLogger().PackageLogger(fmt.Sprintf("visor:shutdown:%s", ce.src)).
@@ -192,10 +217,10 @@ func (v *Visor) Close() error {
 		}(ce)
 
 		select {
-		case ok := <-done:
+		case err := <-done:
 			t.Stop()
 
-			if !ok {
+			if err != nil {
 				log.WithField("elapsed", time.Since(start)).Warn("Module stopped with unexpected result.")
 				v.processReports(log, nil)
 				continue
@@ -209,7 +234,6 @@ func (v *Visor) Close() error {
 
 	v.processReports(v.log, nil)
 	log.Info("Shutdown complete. Goodbye!")
-	return nil
 }
 
 // tpDiscClient is a convenience function to obtain transport discovery client.

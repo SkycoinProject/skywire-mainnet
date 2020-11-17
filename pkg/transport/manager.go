@@ -62,7 +62,7 @@ type Manager struct {
 
 // NewManager creates a Manager with the provided configuration and transport factories.
 // 'factories' should be ordered by preference.
-func NewManager(log *logging.Logger, n *snet.Network, config *ManagerConfig) (*Manager, error) {
+func NewManager(log *logging.Logger, n *snet.Network, config *ManagerConfig) *Manager {
 	if log == nil {
 		log = logging.MustGetLogger("tp_manager")
 	}
@@ -75,7 +75,7 @@ func NewManager(log *logging.Logger, n *snet.Network, config *ManagerConfig) (*M
 		readCh:      make(chan routing.Packet, 20),
 		done:        make(chan struct{}),
 	}
-	return tm, nil
+	return tm
 }
 
 // OnAfterTPClosed sets callback which will fire after transport gets closed.
@@ -506,30 +506,24 @@ func CreateTransportPair(
 	// Prepare tp manager 0.
 	pk0, sk0 := keys[0].PK, keys[0].SK
 	ls0 := InMemoryTransportLogStore()
-	m0, err = NewManager(nil, nEnv.Nets[0], &ManagerConfig{
+	m0 = NewManager(nil, nEnv.Nets[0], &ManagerConfig{
 		PubKey:          pk0,
 		SecKey:          sk0,
 		DiscoveryClient: tpDisc,
 		LogStore:        ls0,
 	})
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
 
 	go m0.Serve(context.TODO())
 
 	// Prepare tp manager 1.
 	pk1, sk1 := keys[1].PK, keys[1].SK
 	ls1 := InMemoryTransportLogStore()
-	m1, err = NewManager(nil, nEnv.Nets[1], &ManagerConfig{
+	m1 = NewManager(nil, nEnv.Nets[1], &ManagerConfig{
 		PubKey:          pk1,
 		SecKey:          sk1,
 		DiscoveryClient: tpDisc,
 		LogStore:        ls1,
 	})
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
 
 	go m1.Serve(context.TODO())
 

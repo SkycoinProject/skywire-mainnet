@@ -44,6 +44,11 @@ func (nrg *NoiseRouteGroup) BandwidthSent() uint64 {
 	return nrg.rg.BandwidthSent()
 }
 
+// BandwidthSent returns amount of bandwidth received (bytes).
+func (nrg *NoiseRouteGroup) BandwidthReceived() uint64 {
+	return nrg.rg.BandwidthReceived()
+}
+
 func (nrg *NoiseRouteGroup) isClosed() bool {
 	return nrg.rg.isClosed()
 }

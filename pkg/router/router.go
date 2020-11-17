@@ -49,6 +49,9 @@ var (
 
 	// ErrRemoteEmptyPK occurs when the specified remote public key is empty.
 	ErrRemoteEmptyPK = errors.New("empty remote public key")
+
+	// ErrRouterClosed occurs when router is closed.
+	ErrRouterClosed = errors.New("router is closed")
 )
 
 // Config configures Router.
@@ -310,6 +313,7 @@ func (r *router) AcceptRoutes(ctx context.Context) (net.Conn, error) {
 func (r *router) Serve(ctx context.Context) error {
 	r.logger.Info("Starting router")
 
+	r.wg.Add(1)
 	go r.serveTransportManager(ctx)
 
 	r.wg.Add(1)
@@ -325,6 +329,8 @@ func (r *router) Serve(ctx context.Context) error {
 }
 
 func (r *router) serveTransportManager(ctx context.Context) {
+	defer r.wg.Done()
+
 	for {
 		packet, err := r.tm.ReadPacket()
 		if err != nil {
@@ -381,6 +387,11 @@ func (r *router) saveRouteGroupRules(rules routing.EdgeRules, nsConf noise.Confi
 	// until they get wrapped with noise
 
 	r.mx.Lock()
+
+	if r.isClosed() {
+		r.mx.Unlock()
+		return nil, ErrRouterClosed
+	}
 
 	// first ensure that this rg is not being wrapped with noise right now
 	if _, ok := r.rgsRaw[rules.Desc]; ok {
@@ -473,6 +484,16 @@ func (r *router) saveRouteGroupRules(rules routing.EdgeRules, nsConf noise.Confi
 	}
 
 	r.mx.Lock()
+	if r.isClosed() {
+		r.mx.Unlock()
+
+		if err := nrg.Close(); err != nil {
+			r.logger.Errorf("Failed to close noise RG (%s): %v", &nrg.rg.desc, err)
+			r.logger.Errorf("Failed to close noise RG (%s): %v", &nrg.rg.desc, err)
+		}
+
+		return nil, ErrRouterClosed
+	}
 	// put ready nrg and remove raw rg, we won't need it anymore
 	r.rgsNs[rules.Desc] = nrg
 	delete(r.rgsRaw, rules.Desc)
@@ -727,6 +748,27 @@ func (r *router) Close() error {
 
 	r.logger.Info("Closing all App connections and RouteGroups")
 
+	r.mx.Lock()
+	for _, rg := range r.rgsRaw {
+		if rg != nil {
+			if err := rg.Close(); err != nil {
+				r.logger.Errorf("Failed to close raw RG (%s): %v", &rg.desc, err)
+			}
+		}
+	}
+	r.rgsRaw = nil
+
+	for _, nrg := range r.rgsNs {
+		if nrg != nil {
+			if err := nrg.Close(); err != nil {
+				r.logger.Errorf("Failed to close noise RG (%s): %v", &nrg.rg.desc, err)
+			}
+		}
+	}
+	r.rgsNs = nil
+
+	// do not release the lock yet, so no new route groups may ba saved
+
 	r.once.Do(func() {
 		close(r.done)
 
@@ -739,9 +781,13 @@ func (r *router) Close() error {
 		r.logger.WithError(err).Warnf("closing route_manager returned error")
 	}
 
+	// first we close the tp manager, then wait for the associated goroutine to complete
+	err := r.tm.Close()
 	r.wg.Wait()
 
-	return r.tm.Close()
+	r.mx.Unlock()
+
+	return err
 }
 
 func (r *router) forwardPacket(ctx context.Context, packet routing.Packet, rule routing.Rule) error {
@@ -1035,4 +1081,14 @@ func (r *router) removeRouteGroupOfRule(rule routing.Rule) {
 		return
 	}
 	log.Debug("Noise route group closed.")
+}
+
+func (r *router) isClosed() bool {
+	select {
+	case <-r.done:
+		return true
+	default:
+	}
+
+	return false
 }

@@ -37,8 +37,8 @@ type apiClient struct {
 // * SW-Public: The specified public key
 // * SW-Nonce:  The nonce for that public key
 // * SW-Sig:    The signature of the payload + the nonce
-func NewHTTP(addr string, key cipher.PubKey, sec cipher.SecKey) (transport.DiscoveryClient, error) {
-	client, err := httpauth.NewClient(context.Background(), addr, key, sec)
+func NewHTTP(ctx context.Context, addr string, key cipher.PubKey, sec cipher.SecKey) (transport.DiscoveryClient, error) {
+	client, err := httpauth.NewClient(ctx, addr, key, sec)
 	if err != nil {
 		return nil, fmt.Errorf("transport discovery httpauth: %w", err)
 	}

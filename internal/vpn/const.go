@@ -1,8 +1,8 @@
 package vpn
 
 const (
-	// TUNNetmaskCIDR is a general netmask used for all TUN interfaces in CIDR format (only suffix).
-	TUNNetmaskCIDR = "/29"
+	// TUNNetmaskPrefix is a netmask prefix for TUN IP.
+	TUNNetmaskPrefix = 29
 	// TUNMTU is MTU value used for all TUN interfaces.
 	TUNMTU = 1500
 )

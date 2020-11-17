@@ -37,6 +37,11 @@ func (c *SkywireConn) BandwidthSent() uint64 {
 	return c.nrg.BandwidthSent()
 }
 
+// BandwidthSent returns amount of bandwidth received (bytes).
+func (c *SkywireConn) BandwidthReceived() uint64 {
+	return c.nrg.BandwidthReceived()
+}
+
 // Close closes connection.
 func (c *SkywireConn) Close() error {
 	var err error

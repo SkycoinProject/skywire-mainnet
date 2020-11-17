@@ -49,26 +49,24 @@ func TestNewManager(t *testing.T) {
 	// Prepare tp manager 0.
 	pk0, sk0 := keys[0].PK, keys[0].SK
 	ls0 := transport.InMemoryTransportLogStore()
-	m0, err := transport.NewManager(nil, nEnv.Nets[0], &transport.ManagerConfig{
+	m0 := transport.NewManager(nil, nEnv.Nets[0], &transport.ManagerConfig{
 		PubKey:          pk0,
 		SecKey:          sk0,
 		DiscoveryClient: tpDisc,
 		LogStore:        ls0,
 	})
-	require.NoError(t, err)
 	go m0.Serve(context.TODO())
 	defer func() { require.NoError(t, m0.Close()) }()
 
 	// Prepare tp manager 1.
 	pk1, sk1 := keys[1].PK, keys[1].SK
 	ls1 := transport.InMemoryTransportLogStore()
-	m2, err := transport.NewManager(nil, nEnv.Nets[1], &transport.ManagerConfig{
+	m2 := transport.NewManager(nil, nEnv.Nets[1], &transport.ManagerConfig{
 		PubKey:          pk1,
 		SecKey:          sk1,
 		DiscoveryClient: tpDisc,
 		LogStore:        ls1,
 	})
-	require.NoError(t, err)
 	go m2.Serve(context.TODO())
 	defer func() { require.NoError(t, m2.Close()) }()
 

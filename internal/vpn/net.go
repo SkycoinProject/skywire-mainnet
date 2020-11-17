@@ -3,14 +3,33 @@ package vpn
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net"
 
-	"github.com/skycoin/dmsg/cipher"
-	"github.com/skycoin/dmsg/noise"
-
-	"github.com/skycoin/skywire/pkg/app/appnet"
+	"github.com/sirupsen/logrus"
 )
+
+// DoClientHandshake performs client/server handshake from the client side.
+func DoClientHandshake(log logrus.FieldLogger, conn net.Conn,
+	cHello ClientHello) (TUNIP, TUNGateway net.IP, err error) {
+	fmt.Printf("Sending client hello: %v", cHello)
+
+	if err := WriteJSON(conn, &cHello); err != nil {
+		return nil, nil, fmt.Errorf("error sending client hello: %w", err)
+	}
+
+	var sHello ServerHello
+	if err := ReadJSON(conn, &sHello); err != nil {
+		return nil, nil, fmt.Errorf("error reading server hello: %w", err)
+	}
+
+	fmt.Printf("Got server hello: %v", sHello)
+
+	if sHello.Status != HandshakeStatusOK {
+		return nil, nil, fmt.Errorf("got status %d (%s) from the server", sHello.Status, sHello.Status)
+	}
+
+	return sHello.TUNIP, sHello.TUNGateway, nil
+}
 
 // WriteJSON marshals `data` and sends it over the `conn`.
 func WriteJSON(conn net.Conn, data interface{}) error {
@@ -55,30 +74,4 @@ func ReadJSON(conn net.Conn, data interface{}) error {
 	}
 
 	return nil
-}
-
-// WrapRWWithNoise wraps `conn` with noise.
-func WrapRWWithNoise(conn net.Conn, initiator bool, pk cipher.PubKey, sk cipher.SecKey) (io.ReadWriter, error) {
-	remoteAddr, isAppConn := conn.RemoteAddr().(appnet.Addr)
-	if isAppConn {
-		ns, err := noise.New(noise.HandshakeKK, noise.Config{
-			LocalPK:   pk,
-			LocalSK:   sk,
-			RemotePK:  remoteAddr.PubKey,
-			Initiator: initiator,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("failed to prepare stream noise object: %w", err)
-		}
-
-		rw := noise.NewReadWriter(conn, ns)
-		if err := rw.Handshake(HSTimeout); err != nil {
-			return nil, fmt.Errorf("error performing noise handshake: %w", err)
-		}
-
-		return rw, nil
-	}
-
-	// shouldn't happen, but no encryption in this case
-	return conn, nil
 }

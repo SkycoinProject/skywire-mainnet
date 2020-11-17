@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/pkg/profile"
@@ -99,10 +98,11 @@ var rootCmd = &cobra.Command{
 				log.WithError(err).Infof("Restarted skywire-visor service")
 			}
 
+			// TODO(nkryuchkov): decide if it's needed, prevents Windows build
 			// Detach child from parent. TODO: This may be unnecessary.
-			if _, err := syscall.Setsid(); err != nil {
+			/*if _, err := syscall.Setsid(); err != nil {
 				log.WithError(err).Errorf("Failed to call setsid()")
-			}
+			}*/
 		}
 
 		time.Sleep(delayDuration)
@@ -116,8 +116,9 @@ var rootCmd = &cobra.Command{
 
 		conf := initConfig(log, args, confPath)
 
-		v, ok := visor.NewVisor(conf, restartCtx)
-		if !ok {
+		v := visor.NewVisor(conf, restartCtx)
+
+		if err := v.Start(context.Background()); err != nil {
 			log.Fatal("Failed to start visor.")
 		}
 
@@ -127,9 +128,7 @@ var rootCmd = &cobra.Command{
 		// Wait.
 		<-ctx.Done()
 
-		if err := v.Close(); err != nil {
-			log.WithError(err).Error("Visor closed with error.")
-		}
+		v.Close()
 	},
 	Version: buildinfo.Version(),
 }

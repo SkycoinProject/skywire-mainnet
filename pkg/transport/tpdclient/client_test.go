@@ -73,7 +73,7 @@ func TestClientAuth(t *testing.T) {
 	))
 	defer srv.Close()
 
-	client, err := NewHTTP(srv.URL, testPubKey, testSecKey)
+	client, err := NewHTTP(context.Background(), srv.URL, testPubKey, testSecKey)
 	require.NoError(t, err)
 	c := client.(*apiClient)
 
@@ -154,7 +154,7 @@ func TestRegisterTransportResponses(t *testing.T) {
 			})))
 			defer srv.Close()
 
-			c, err := NewHTTP(srv.URL, testPubKey, testSecKey)
+			c, err := NewHTTP(context.Background(), srv.URL, testPubKey, testSecKey)
 			require.NoError(t, err)
 			err = c.RegisterTransports(context.Background(), &transport.SignedEntry{})
 			if tc.assert != nil {
@@ -180,7 +180,7 @@ func TestRegisterTransports(t *testing.T) {
 	})))
 	defer srv.Close()
 
-	c, err := NewHTTP(srv.URL, testPubKey, testSecKey)
+	c, err := NewHTTP(context.Background(), srv.URL, testPubKey, testSecKey)
 	require.NoError(t, err)
 	require.NoError(t, c.RegisterTransports(context.Background(), sEntry))
 }
@@ -193,7 +193,7 @@ func TestGetTransportByID(t *testing.T) {
 	})))
 	defer srv.Close()
 
-	c, err := NewHTTP(srv.URL, testPubKey, testSecKey)
+	c, err := NewHTTP(context.Background(), srv.URL, testPubKey, testSecKey)
 	require.NoError(t, err)
 	resEntry, err := c.GetTransportByID(context.Background(), entry.Entry.ID)
 	require.NoError(t, err)
@@ -210,7 +210,7 @@ func TestGetTransportsByEdge(t *testing.T) {
 	})))
 	defer srv.Close()
 
-	c, err := NewHTTP(srv.URL, testPubKey, testSecKey)
+	c, err := NewHTTP(context.Background(), srv.URL, testPubKey, testSecKey)
 	require.NoError(t, err)
 	entries, err := c.GetTransportsByEdge(context.Background(), entry.Entry.Edges[0])
 	require.NoError(t, err)
@@ -232,7 +232,7 @@ func TestUpdateStatuses(t *testing.T) {
 	})))
 	defer srv.Close()
 
-	c, err := NewHTTP(srv.URL, testPubKey, testSecKey)
+	c, err := NewHTTP(context.Background(), srv.URL, testPubKey, testSecKey)
 	require.NoError(t, err)
 	entries, err := c.UpdateStatuses(context.Background(), &transport.Status{ID: entry.Entry.ID, IsUp: false})
 	require.NoError(t, err)

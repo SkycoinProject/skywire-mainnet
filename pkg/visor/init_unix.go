@@ -16,7 +16,8 @@ import (
 
 const ownerRWX = 0700
 
-func initDmsgpty(v *Visor) bool {
+// InitDmsgpty initializes dmsgpty.
+func InitDmsgpty(ctx context.Context, v *Visor) error {
 	report := v.makeReporter("dmsgpty")
 	conf := v.conf.Dmsgpty
 
@@ -55,18 +56,18 @@ func initDmsgpty(v *Visor) bool {
 	pty := dmsgpty.NewHost(dmsgC, wl)
 
 	if ptyPort := conf.Port; ptyPort != 0 {
-		ctx, cancel := context.WithCancel(context.Background())
+		cancellableCtx, cancel := context.WithCancel(ctx)
 		wg := new(sync.WaitGroup)
 		wg.Add(1)
 
 		go func() {
 			defer wg.Done()
-			if err := pty.ListenAndServe(ctx, ptyPort); err != nil {
+			if err := pty.ListenAndServe(cancellableCtx, ptyPort); err != nil {
 				report(fmt.Errorf("listen and serve stopped: %w", err))
 			}
 		}()
 
-		v.pushCloseStack("dmsgpty.serve", func() bool {
+		v.pushCloseStack("dmsgpty.serve", func() error {
 			cancel()
 			wg.Wait()
 			return report(nil)
@@ -85,22 +86,22 @@ func initDmsgpty(v *Visor) bool {
 			return report(fmt.Errorf("failed to start dmsgpty cli listener: %w", err))
 		}
 
-		ctx, cancel := context.WithCancel(context.Background())
+		cancellableCtx, cancel := context.WithCancel(ctx)
 		wg := new(sync.WaitGroup)
 		wg.Add(1)
 
 		go func() {
 			defer wg.Done()
-			if err := pty.ServeCLI(ctx, cliL); err != nil {
+			if err := pty.ServeCLI(cancellableCtx, cliL); err != nil {
 				report(fmt.Errorf("serve cli stopped: %w", err))
 			}
 		}()
 
-		v.pushCloseStack("dmsgpty.cli", func() bool {
+		v.pushCloseStack("dmsgpty.cli", func() error {
 			cancel()
-			ok := report(cliL.Close())
+			err := report(cliL.Close())
 			wg.Wait()
-			return ok
+			return err
 		})
 	}
 

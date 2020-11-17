@@ -10,6 +10,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/skycoin/skywire/pkg/visor/visorerr"
+
 	"github.com/skycoin/dmsg"
 	"github.com/skycoin/dmsg/cipher"
 	"github.com/skycoin/dmsg/disc"
@@ -104,7 +106,7 @@ type Network struct {
 }
 
 // New creates a network from a config.
-func New(conf Config, eb *appevent.Broadcaster) (*Network, error) {
+func New(ctx context.Context, conf Config, eb *appevent.Broadcaster) *Network {
 	clients := NetworkClients{
 		Direct: make(map[string]directtp.Client),
 	}
@@ -116,14 +118,14 @@ func New(conf Config, eb *appevent.Broadcaster) (*Network, error) {
 				OnSessionDial: func(network, addr string) error {
 					data := appevent.TCPDialData{RemoteNet: network, RemoteAddr: addr}
 					event := appevent.NewEvent(appevent.TCPDial, data)
-					_ = eb.Broadcast(context.Background(), event) //nolint:errcheck
+					_ = eb.Broadcast(ctx, event) //nolint:errcheck
 					// @evanlinjin: An error is not returned here as this will cancel the session dial.
 					return nil
 				},
 				OnSessionDisconnect: func(network, addr string, _ error) {
 					data := appevent.TCPCloseData{RemoteNet: network, RemoteAddr: addr}
 					event := appevent.NewEvent(appevent.TCPClose, data)
-					_ = eb.Broadcast(context.Background(), event) //nolint:errcheck
+					_ = eb.Broadcast(ctx, event) //nolint:errcheck
 				},
 			},
 		}
@@ -174,7 +176,7 @@ func New(conf Config, eb *appevent.Broadcaster) (*Network, error) {
 		clients.Direct[tptypes.SUDPH] = directtp.NewClient(sudphConf)
 	}
 
-	return NewRaw(conf, clients), nil
+	return NewRaw(conf, clients)
 }
 
 // NewRaw creates a network from a config and a dmsg client.
@@ -204,7 +206,7 @@ func (n *Network) Conf() Config {
 }
 
 // Init initiates server connections.
-func (n *Network) Init() error {
+func (n *Network) Init(ctx context.Context) error {
 	if n.clients.DmsgC != nil {
 		time.Sleep(200 * time.Millisecond)
 		go n.clients.DmsgC.Serve(context.Background())
@@ -213,8 +215,9 @@ func (n *Network) Init() error {
 
 	if n.conf.NetworkConfigs.STCP != nil {
 		if client, ok := n.clients.Direct[tptypes.STCP]; ok && client != nil && n.conf.NetworkConfigs.STCP.LocalAddr != "" {
-			if err := client.Serve(); err != nil {
-				return fmt.Errorf("failed to initiate 'stcp': %w", err)
+			if err := client.Serve(ctx); err != nil {
+				err = fmt.Errorf("failed to initiate 'stcp': %w", err)
+				return visorerr.NewErrorWithCode(err, visorerr.ErrCodeSTCPInitFailed)
 			}
 		} else {
 			log.Infof("No config found for stcp")
@@ -223,8 +226,9 @@ func (n *Network) Init() error {
 
 	if n.conf.ARClient != nil {
 		if client, ok := n.clients.Direct[tptypes.STCPR]; ok && client != nil {
-			if err := client.Serve(); err != nil {
-				return fmt.Errorf("failed to initiate 'stcpr': %w", err)
+			if err := client.Serve(ctx); err != nil {
+				err = fmt.Errorf("failed to initiate 'stcpr': %w", err)
+				return visorerr.NewErrorWithCode(err, visorerr.ErrCodeSTCPRInitFailed)
 			}
 
 			if n.conf.PublicTrusted {
@@ -235,8 +239,9 @@ func (n *Network) Init() error {
 		}
 
 		if client, ok := n.clients.Direct[tptypes.SUDPH]; ok && client != nil {
-			if err := client.Serve(); err != nil {
-				return fmt.Errorf("failed to initiate 'sudph': %w", err)
+			if err := client.Serve(ctx); err != nil {
+				err = fmt.Errorf("failed to initiate 'sudph': %w", err)
+				return visorerr.NewErrorWithCode(err, visorerr.ErrCodeSUDPHInitFailed)
 			}
 		} else {
 			log.Infof("No config found for sudph")

@@ -169,6 +169,7 @@ func (c *Client) Nonce(ctx context.Context, key cipher.PubKey) (Nonce, error) {
 	if err != nil {
 		return 0, err
 	}
+
 	req = req.WithContext(ctx)
 
 	resp, err := c.client.Do(req)
