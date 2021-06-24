@@ -1,18 +1,5 @@
 package dmsgpty
 
-import (
-	"github.com/creack/pty"
-)
-
-// PtyGateway represents a pty gateway, hosted by the pty.SessionServer
-type PtyGateway interface {
-	Start(req *CommandReq, _ *struct{}) error
-	Stop(_, _ *struct{}) error
-	Read(reqN *int, respB *[]byte) error
-	Write(reqB *[]byte, respN *int) error
-	SetPtySize(size *pty.Winsize, _ *struct{}) error
-}
-
 // LocalPtyGateway is the gateway to a local pty.
 type LocalPtyGateway struct {
 	ses *Pty
@@ -21,18 +8,6 @@ type LocalPtyGateway struct {
 // NewPtyGateway creates a new gateway to a local pty.
 func NewPtyGateway(ses *Pty) PtyGateway {
 	return &LocalPtyGateway{ses: ses}
-}
-
-// CommandReq represents a pty command.
-type CommandReq struct {
-	Name string
-	Arg  []string
-	Size *pty.Winsize
-}
-
-// Start starts the local pty.
-func (g *LocalPtyGateway) Start(req *CommandReq, _ *struct{}) error {
-	return g.ses.Start(req.Name, req.Arg, req.Size)
 }
 
 // Stop stops the local pty.
@@ -48,16 +23,16 @@ func (g *LocalPtyGateway) Read(reqN *int, respB *[]byte) error {
 	return err
 }
 
+// Start starts the local pty.
+func (g *LocalPtyGateway) Start(req *CommandReq, _ *struct{}) error {
+	return g.ses.Start(req.Name, req.Arg, req.Size)
+}
+
 // Write writes to the local pty.
 func (g *LocalPtyGateway) Write(wb *[]byte, n *int) error {
 	var err error
 	*n, err = g.ses.Write(*wb)
 	return err
-}
-
-// SetPtySize sets the local pty's window size.
-func (g *LocalPtyGateway) SetPtySize(size *pty.Winsize, _ *struct{}) error {
-	return g.ses.SetPtySize(size)
 }
 
 // ProxiedPtyGateway is an RPC gateway for a remote pty.
@@ -93,9 +68,4 @@ func (g *ProxiedPtyGateway) Write(reqB *[]byte, respN *int) error {
 	var err error
 	*respN, err = g.ptyC.Write(*reqB)
 	return err
-}
-
-// SetPtySize sets the remote pty's window size.
-func (g *ProxiedPtyGateway) SetPtySize(size *pty.Winsize, _ *struct{}) error {
-	return g.ptyC.SetPtySize(size)
 }

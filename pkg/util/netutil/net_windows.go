@@ -27,8 +27,8 @@ func DefaultNetworkInterface() (string, error) {
 	var ips []string
 
 	if len(splitLines) > 0 {
-		re := regexp.MustCompile("\\s+")
-		for i, line := range splitLines {
+		re := regexp.MustCompile(`\s+`)
+		for _, line := range splitLines {
 			ipAddr := re.Split(strings.TrimSpace(line), -1)
 
 			if len(ipAddr) > 2 {
@@ -46,7 +46,7 @@ func DefaultNetworkInterface() (string, error) {
 
 	// get default network interface based on its ip
 	findInterfaceCmd := fmt.Sprintf("Get-NetIpAddress -IPAddress '%s' | %%{$_.InterfaceAlias}", ips[0])
-	cmd = exec.Command("powershell", findInterfaceCmd)
+	cmd = exec.Command("powershell", findInterfaceCmd) // nolint:gosec
 	output, err = cmd.Output()
 	if err != nil {
 		return "", fmt.Errorf("unable to get default interface: %v", err)

@@ -4,7 +4,6 @@
 
 // This file was originally from https://golang.org/cl/24717 by Vlad Krasnov of CloudFlare.
 
-//go:build gc && !purego
 // +build gc,!purego
 
 #include "textflag.h"

@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"io"
 	"net/rpc"
-	"os"
 	"sync"
 
-	"github.com/creack/pty"
 	"github.com/sirupsen/logrus"
 	"github.com/skycoin/skycoin/src/util/logging"
 
@@ -72,21 +70,6 @@ func (sc *PtyClient) close() (closed bool) {
 	return closed
 }
 
-// Start starts the pty.
-func (sc *PtyClient) Start(name string, arg ...string) error {
-	size, err := pty.GetsizeFull(os.Stdin)
-	if err != nil {
-		sc.log.WithError(err).Warn("failed to obtain terminal size")
-		size = nil
-	}
-	return sc.StartWithSize(name, arg, size)
-}
-
-// StartWithSize starts the pty with a specified size.
-func (sc *PtyClient) StartWithSize(name string, arg []string, size *pty.Winsize) error {
-	return sc.call("Start", &CommandReq{Name: name, Arg: arg, Size: size}, &empty)
-}
-
 // Stop stops the pty.
 func (sc *PtyClient) Stop() error {
 	return sc.call("Stop", &empty, &empty)
@@ -105,11 +88,6 @@ func (sc *PtyClient) Write(b []byte) (int, error) {
 	var n int
 	err := sc.call("Write", &b, &n)
 	return n, processRPCError(err)
-}
-
-// SetPtySize sets the pty size.
-func (sc *PtyClient) SetPtySize(size *pty.Winsize) error {
-	return sc.call("SetPtySize", size, &empty)
 }
 
 func (*PtyClient) rpcMethod(m string) string {

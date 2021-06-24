@@ -1,4 +1,4 @@
-// +build !arm64
+// +build !arm64,!windows
 
 package stdio
 

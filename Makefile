@@ -17,7 +17,13 @@ BRANCH := latest
 
 PROJECT_BASE := github.com/skycoin/skywire
 DMSG_BASE := github.com/skycoin/dmsg
-OPTS?=GO111MODULE=on
+ifeq ($(OS),Windows_NT)
+	OPTS?=powershell -Command setx GO111MODULE on;
+	DATE := $(shell powershell -Command date -u ${RFC_3339})
+else
+	OPTS?=GO111MODULE=on
+endif
+
 STATIC_OPTS?= $(OPTS) CC=musl-gcc
 MANAGER_UI_DIR = static/skywire-manager-src
 MANAGER_UI_BUILT_DIR=cmd/skywire-visor/static
@@ -45,6 +51,8 @@ check: lint test ## Run linters and tests
 
 build: host-apps bin ## Install dependencies, build apps and binaries. `go build` with ${OPTS}
 
+build-windows: host-apps-windows bin-windows ## Install dependencies, build apps and binaries. `go build` with ${OPTS}
+
 build-static: host-apps-static bin-static ## Build apps and binaries. `go build` with ${OPTS}
 
 install-generate: ## Installs required execs for go generate.
@@ -63,8 +71,15 @@ clean: ## Clean project: remove created binaries and apps
 	-rm -rf ./apps
 	-rm -f ./skywire-visor ./skywire-cli ./setup-node
 
+clean-windows:
+	powershell -Command Remove-Item -Path ./apps -Force -Recurse
+	powershell -Command Remove-Item -Path .\skywire-visor.exe,.\skywire-cli.exe,.\setup-node.exe -Force
+
 install: ## Install `skywire-visor`, `skywire-cli`, `setup-node`
 	${OPTS} go install ${BUILD_OPTS} ./cmd/skywire-visor ./cmd/skywire-cli ./cmd/setup-node
+
+install-windows:
+	powershell 'Get-ChildItem .\cmd | % { ${OPTS} go install ${BUILD_OPTS} ./ $$_.FullName }'
 
 install-static: ## Install `skywire-visor`, `skywire-cli`, `setup-node`
 	${STATIC_OPTS} go install -trimpath --ldflags '-linkmode external -extldflags "-static" -buildid=' ./cmd/skywire-visor ./cmd/skywire-cli ./cmd/setup-node
@@ -88,6 +103,10 @@ install-linters: ## Install linters
 	${OPTS} go get -u golang.org/x/tools/cmd/goimports
 	${OPTS} go get -u github.com/incu6us/goimports-reviser/v2
 
+install-linters-windows:
+	${OPTS} go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.41.0
+	${OPTS} go get -u golang.org/x/tools/cmd/goimports
+
 tidy: ## Tidies and vendors dependencies.
 	${OPTS} go mod tidy -v
 
@@ -97,29 +116,43 @@ format: tidy ## Formats the code. Must have goimports and goimports-reviser inst
 	${OPTS} goimports -w -local ${PROJECT_BASE} ./internal
 	find . -type f -name '*.go' -not -path "./vendor/*"  -exec goimports-reviser -project-name ${PROJECT_BASE} -file-path {} \;
 
+format-windows: tidy ## Formats the code. Must have goimports and goimports-reviser installed (use make install-linters).
+	${OPTS} goimports -w -local ${PROJECT_BASE} ./pkg
+	${OPTS} goimports -w -local ${PROJECT_BASE} ./cmd
+	${OPTS} goimports -w -local ${PROJECT_BASE} ./internal
+
 dep: tidy ## Sorts dependencies
 	${OPTS} go mod vendor -v
 
 host-apps: ## Build app
-	${OPTS} go build ${BUILD_OPTS} -o ./apps/skychat ./cmd/apps/skychat
-	${OPTS} go build ${BUILD_OPTS} -o ./apps/skysocks ./cmd/apps/skysocks
-	${OPTS} go build ${BUILD_OPTS} -o ./apps/skysocks-client  ./cmd/apps/skysocks-client
-	${OPTS} go build ${BUILD_OPTS} -o ./apps/vpn-server ./cmd/apps/vpn-server
-	${OPTS} go build ${BUILD_OPTS} -o ./apps/vpn-client ./cmd/apps/vpn-client
+	mkdir -p ./apps
+	${OPTS} go build ${BUILD_OPTS} -o ./apps/ ./cmd/apps/skychat
+	${OPTS} go build ${BUILD_OPTS} -o ./apps/ ./cmd/apps/skysocks
+	${OPTS} go build ${BUILD_OPTS} -o ./apps/ ./cmd/apps/skysocks-client
+	${OPTS} go build ${BUILD_OPTS} -o ./apps/ ./cmd/apps/vpn-server
+	${OPTS} go build ${BUILD_OPTS} -o ./apps/ ./cmd/apps/vpn-client
+
+host-apps-windows:
+	powershell -Command new-item .\apps -itemtype directory -force
+	powershell 'Get-ChildItem .\cmd\apps | % { ${OPTS} go build ${BUILD_OPTS} -o ./apps $$_.FullName }'
 
 # Static Apps
 host-apps-static: ## Build app
-	${STATIC_OPTS} go build -trimpath --ldflags '-linkmode external -extldflags "-static" -buildid=' -o ./apps/skychat ./cmd/apps/skychat
-	${STATIC_OPTS} go build -trimpath --ldflags '-linkmode external -extldflags "-static" -buildid=' -o ./apps/skysocks ./cmd/apps/skysocks
-	${STATIC_OPTS} go build -trimpath --ldflags '-linkmode external -extldflags "-static" -buildid=' -o ./apps/skysocks-client  ./cmd/apps/skysocks-client
-	${STATIC_OPTS} go build -trimpath --ldflags '-linkmode external -extldflags "-static" -buildid=' -o ./apps/vpn-server ./cmd/apps/vpn-server
-	${STATIC_OPTS} go build -trimpath --ldflags '-linkmode external -extldflags "-static" -buildid=' -o ./apps/vpn-client ./cmd/apps/vpn-client
+	mkdir -p ./apps
+	${STATIC_OPTS} go build -trimpath --ldflags '-linkmode external -extldflags "-static" -buildid=' -o ./apps/ ./cmd/apps/skychat
+	${STATIC_OPTS} go build -trimpath --ldflags '-linkmode external -extldflags "-static" -buildid=' -o ./apps/ ./cmd/apps/skysocks
+	${STATIC_OPTS} go build -trimpath --ldflags '-linkmode external -extldflags "-static" -buildid=' -o ./apps/ ./cmd/apps/skysocks-client
+	${STATIC_OPTS} go build -trimpath --ldflags '-linkmode external -extldflags "-static" -buildid=' -o ./apps/ ./cmd/apps/vpn-server
+	${STATIC_OPTS} go build -trimpath --ldflags '-linkmode external -extldflags "-static" -buildid=' -o ./apps/ ./cmd/apps/vpn-client
 
 # Bin
 bin: ## Build `skywire-visor`, `skywire-cli`
-	${OPTS} go build ${BUILD_OPTS} -o ./skywire-visor ./cmd/skywire-visor
-	${OPTS} go build ${BUILD_OPTS} -o ./skywire-cli  ./cmd/skywire-cli
-	${OPTS} go build ${BUILD_OPTS} -o ./setup-node ./cmd/setup-node
+	${OPTS} go build ${BUILD_OPTS} -o ./ ./cmd/skywire-visor
+	${OPTS} go build ${BUILD_OPTS} -o ./ ./cmd/skywire-cli
+	${OPTS} go build ${BUILD_OPTS} -o ./ ./cmd/setup-node
+
+bin-windows:
+	powershell 'Get-ChildItem .\cmd | % { ${OPTS} go build ${BUILD_OPTS} -o ./ $$_.FullName }'
 
 # Static Bin
 bin-static: ## Build `skywire-visor`, `skywire-cli`

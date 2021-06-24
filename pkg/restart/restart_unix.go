@@ -5,6 +5,7 @@ package restart
 import (
 	"os"
 	"os/exec"
+	"os/signal"
 	"syscall"
 )
 
@@ -78,4 +79,10 @@ func childPgid() (int, error) {
 func pgidExists(pgid int) bool {
 	n, err := syscall.Getpgid(pgid)
 	return err == nil && n >= 0
+}
+
+func (c *Context) ignoreSignals() {
+	// SIGTTIN and SIGTTOU need to be ignored to make Foreground flag of syscall.SysProcAttr work.
+	// https://github.com/golang/go/issues/37217
+	signal.Ignore(syscall.SIGTTIN, syscall.SIGTTOU)
 }

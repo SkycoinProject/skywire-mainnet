@@ -347,12 +347,8 @@ func (l *Launcher) killHangingProcesses() error {
 	if err != nil {
 		return err
 	}
-	defer func() {
-		if err := pidF.Close(); err != nil {
-			log.WithError(err).Warn("Error closing PID file.")
-		}
-	}()
-	log = log.WithField("pid_file", pidF.Name())
+	filename := pidF.Name()
+	log = log.WithField("pid_file", filename)
 
 	scan := bufio.NewScanner(pidF)
 	for scan.Scan() {
@@ -369,9 +365,12 @@ func (l *Launcher) killHangingProcesses() error {
 
 		l.killHangingProc(appInfo[0], pid)
 	}
+	if err = pidF.Close(); err != nil {
+		log.WithError(err).Error("Failed to close file")
+	}
 
 	// empty file
-	if err := pathutil.AtomicWriteFile(pidF.Name(), []byte{}); err != nil {
+	if err = pathutil.AtomicWriteFile(filename, []byte{}); err != nil {
 		log.WithError(err).Error("Failed to empty pid file.")
 	}
 

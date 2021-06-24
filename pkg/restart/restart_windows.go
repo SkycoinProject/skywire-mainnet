@@ -2,10 +2,13 @@
 
 package restart
 
-import "os/exec"
+import (
+	"os/exec"
+)
 
-func attachTTY(*exec.Cmd) {
+func attachTTY(_ *exec.Cmd) {
 	// not used for Windows
+}
 
-	return
+func (c *Context) ignoreSignals() {
 }

@@ -10,7 +10,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/creack/pty"
 	"github.com/sirupsen/logrus"
 	"github.com/skycoin/skycoin/src/util/logging"
 	"nhooyr.io/websocket"
@@ -32,7 +31,7 @@ type UIConfig struct {
 // DefaultUIConfig returns the default UI config.
 func DefaultUIConfig() UIConfig {
 	return UIConfig{
-		CmdName: "/bin/bash",
+		CmdName: DefaultCmd,
 		CmdArgs: nil,
 	}
 }
@@ -155,7 +154,7 @@ func (ui *UI) Handler() http.HandlerFunc {
 		}
 		defer func() { log.WithError(ptyC.Close()).Debug("Closed ptyC.") }()
 
-		if err := ptyC.StartWithSize(ui.conf.CmdName, ui.conf.CmdArgs, &pty.Winsize{Rows: wsRows, Cols: wsCols}); err != nil {
+		if err = ui.uiStartSize(ptyC); err != nil {
 			log.Print("xxxx")
 
 			writeWSError(log, wsConn, err)

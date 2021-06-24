@@ -4,6 +4,8 @@ package vpn
 
 import (
 	"fmt"
+
+	"github.com/skycoin/skywire/pkg/util/osutil"
 )
 
 const (
@@ -20,12 +22,12 @@ func SetupTUN(ifcName, ipCIDR, gateway string, mtu int) error {
 	}
 
 	setupCmd := fmt.Sprintf(tunSetupCMDFmt, ifcName, ip, netmask, gateway)
-	if err := run("cmd", "/C", setupCmd); err != nil {
+	if err := osutil.Run("cmd", "/C", setupCmd); err != nil {
 		return fmt.Errorf("error running command %s: %w", setupCmd, err)
 	}
 
 	mtuSetupCmd := fmt.Sprintf(tunMTUSetupCMDFmt, ifcName, mtu)
-	if err := run("cmd", "/C", mtuSetupCmd); err != nil {
+	if err := osutil.Run("cmd", "/C", mtuSetupCmd); err != nil {
 		return fmt.Errorf("error running command %s: %w", mtuSetupCmd, err)
 	}
 
@@ -55,5 +57,5 @@ func modifyRoutingTable(action, ipCIDR, gateway string) error {
 	}
 
 	cmd := fmt.Sprintf(modifyRouteCMDFmt, action, ip, netmask, gateway)
-	return run("cmd", "/C", cmd)
+	return osutil.Run("cmd", "/C", cmd)
 }

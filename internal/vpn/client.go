@@ -669,14 +669,6 @@ func (c *Client) shakeHands(conn net.Conn) (TUNIP, TUNGateway net.IP, err error)
 	return sHello.TUNIP, sHello.TUNGateway, nil
 }
 
-func (c *Client) releaseSysPrivileges() {
-	defer c.suidMu.Unlock()
-
-	if err := releaseClientSysPrivileges(c.suid); err != nil {
-		fmt.Printf("Failed to release system privileges: %v\n", err)
-	}
-}
-
 func (c *Client) dialServer(appCl *app.Client, pk cipher.PubKey) (net.Conn, error) {
 	const (
 		netType = appnet.TypeSkynet

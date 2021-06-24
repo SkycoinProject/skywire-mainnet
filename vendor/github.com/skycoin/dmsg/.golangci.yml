@@ -71,7 +71,7 @@ linters-settings:
     #  2. you use go >= 1.10
     #  3. you do repeated runs (false for CI) or cache $GOPATH/pkg or `go env GOCACHE` dir in CI.
     use-installed-packages: false
-  golint:
+  revive:
     # minimal confidence for issues, default is 0.8
     min-confidence: 0.8
   gofmt:
@@ -139,7 +139,7 @@ linters-settings:
 
 linters:
   enable:
-    - golint
+    - revive
     - goimports
     - varcheck
     - unparam

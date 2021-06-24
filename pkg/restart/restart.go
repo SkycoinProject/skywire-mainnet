@@ -9,7 +9,6 @@ import (
 	"os/signal"
 	"strings"
 	"sync/atomic"
-	"syscall"
 	"time"
 
 	"github.com/shirou/gopsutil/process"
@@ -111,11 +110,9 @@ func (c *Context) Systemd() bool {
 // Restart restarts an executable using Context.
 // If the process is supervised by systemd, it lets systemd restart the process.
 func (c *Context) Restart() (err error) {
-	// SIGTTIN and SIGTTOU need to be ignored to make Foreground flag of syscall.SysProcAttr work.
-	// https://github.com/golang/go/issues/37217
-	signal.Ignore(syscall.SIGTTIN, syscall.SIGTTOU)
+	c.ignoreSignals()
 
-	if err := c.start(); err != nil {
+	if err = c.start(); err != nil {
 		return err
 	}
 
