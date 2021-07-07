@@ -43,6 +43,7 @@ require (
 	golang.org/x/term v0.0.0-20210503060354-a79de5458b56 // indirect
 	golang.org/x/tools v0.1.2 // indirect
 	golang.zx2c4.com/wireguard v0.0.20200320
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 	nhooyr.io/websocket v1.8.2
 )
 

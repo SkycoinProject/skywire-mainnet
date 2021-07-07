@@ -10,6 +10,8 @@ import (
 const (
 	DefaultSkywirePath = "."
 	PackageSkywirePath = "/opt/skywire"
+	// TODO make a decision about actual name of the domain
+	DefaultServersListAddress = "http://servers-list.skycoin.com"
 )
 
 // Constants for old default services.

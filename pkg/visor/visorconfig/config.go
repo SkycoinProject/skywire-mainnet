@@ -19,34 +19,27 @@ func MakeBaseConfig(common *Common) *V1 {
 	conf := new(V1)
 	conf.Common = common
 	conf.Dmsg = &snet.DmsgConfig{
-		Discovery:     skyenv.DefaultDmsgDiscAddr,
 		SessionsCount: 1,
 	}
-	conf.Transport = &V1Transport{
-		Discovery:       skyenv.DefaultTpDiscAddr,
-		AddressResolver: skyenv.DefaultAddressResolverAddr,
-	}
+	conf.Transport = &V1Transport{}
 	conf.Routing = &V1Routing{
 		SetupNodes:         []cipher.PubKey{skyenv.MustPK(skyenv.DefaultSetupPK)},
-		RouteFinder:        skyenv.DefaultRouteFinderAddr,
 		RouteFinderTimeout: DefaultTimeout,
 	}
 	conf.Launcher = &V1Launcher{
-		Discovery: &V1AppDisc{
-			ServiceDisc: skyenv.DefaultServiceDiscAddr,
-		},
+		Discovery:  &V1AppDisc{},
 		Apps:       nil,
 		ServerAddr: skyenv.DefaultAppSrvAddr,
 		BinPath:    skyenv.DefaultAppBinPath,
 	}
-	conf.UptimeTracker = &V1UptimeTracker{
-		Addr: skyenv.DefaultUptimeTrackerAddr,
-	}
+	conf.UptimeTracker = &V1UptimeTracker{}
 	conf.CLIAddr = skyenv.DefaultRPCAddr
 	conf.LogLevel = skyenv.DefaultLogLevel
 	conf.LocalPath = skyenv.DefaultLocalPath
 	conf.ShutdownTimeout = DefaultTimeout
 	conf.RestartCheckDelay = Duration(restart.DefaultCheckDelay)
+	conf.IsTest = false
+	conf.ServersListAddress = skyenv.DefaultServersListAddress
 	return conf
 }
 
@@ -79,17 +72,11 @@ func defaultConfigFromCommon(cc *Common, hypervisor bool) (*V1, error) {
 	}
 
 	conf.STCP = &snet.STCPConfig{
-		LocalAddr: skyenv.DefaultSTCPAddr,
-		PKTable:   nil,
-	}
-
-	conf.UptimeTracker = &V1UptimeTracker{
-		Addr: skyenv.DefaultUptimeTrackerAddr,
+		PKTable: nil,
 	}
 
 	conf.Launcher.Discovery = &V1AppDisc{
 		UpdateInterval: Duration(skyenv.AppDiscUpdateInterval),
-		ServiceDisc:    skyenv.DefaultServiceDiscAddr,
 	}
 
 	conf.Launcher.Apps = []launcher.AppConfig{
@@ -171,27 +158,14 @@ func MakePackageConfig(log *logging.MasterLogger, confPath string, sk *cipher.Se
 
 // SetDefaultTestingValues mutates configuration to use testing values
 func SetDefaultTestingValues(conf *V1) {
-	conf.Dmsg.Discovery = skyenv.TestDmsgDiscAddr
-	conf.Transport.Discovery = skyenv.TestTpDiscAddr
-	conf.Transport.AddressResolver = skyenv.TestAddressResolverAddr
-	conf.Routing.RouteFinder = skyenv.TestRouteFinderAddr
+	conf.IsTest = true
 	conf.Routing.SetupNodes = []cipher.PubKey{skyenv.MustPK(skyenv.TestSetupPK)}
-	conf.UptimeTracker.Addr = skyenv.TestUptimeTrackerAddr
-	conf.Launcher.Discovery.ServiceDisc = skyenv.TestServiceDiscAddr
 }
 
 // SetDefaultProductionValues mutates configuration to use production values
 func SetDefaultProductionValues(conf *V1) {
-	conf.Dmsg.Discovery = skyenv.DefaultDmsgDiscAddr
-	conf.Transport.Discovery = skyenv.DefaultTpDiscAddr
-	conf.Transport.AddressResolver = skyenv.DefaultAddressResolverAddr
-	conf.Routing.RouteFinder = skyenv.DefaultRouteFinderAddr
 	conf.Routing.SetupNodes = []cipher.PubKey{skyenv.MustPK(skyenv.DefaultSetupPK)}
-	conf.UptimeTracker = &V1UptimeTracker{
-		Addr: skyenv.DefaultUptimeTrackerAddr,
-	}
 	conf.Launcher.Discovery = &V1AppDisc{
 		UpdateInterval: Duration(skyenv.AppDiscUpdateInterval),
-		ServiceDisc:    skyenv.DefaultServiceDiscAddr,
 	}
 }

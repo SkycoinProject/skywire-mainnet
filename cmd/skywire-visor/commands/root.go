@@ -11,6 +11,7 @@ import (
 	_ "net/http/pprof" // nolint:gosec // https://golang.org/doc/diagnostics.html#profiling
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
@@ -21,6 +22,7 @@ import (
 	"github.com/skycoin/skycoin/src/util/logging"
 	"github.com/spf13/cobra"
 	"github.com/toqueteos/webbrowser"
+	"gopkg.in/yaml.v3"
 
 	"github.com/skycoin/skywire/pkg/restart"
 	"github.com/skycoin/skywire/pkg/syslog"
@@ -35,6 +37,7 @@ var restartCtx = restart.CaptureContext()
 
 const (
 	defaultConfigName    = "skywire-config.json"
+	defaultServersName   = "servers.yml"
 	runtimeLogMaxEntries = 300
 )
 
@@ -46,6 +49,7 @@ var (
 	confPath      string
 	delay         string
 	launchBrowser bool
+	localServer   bool
 )
 
 func init() {
@@ -56,6 +60,7 @@ func init() {
 	rootCmd.Flags().StringVarP(&confPath, "config", "c", "", "config file location. If the value is 'STDIN', config file will be read from stdin.")
 	rootCmd.Flags().StringVar(&delay, "delay", "0ns", "start delay (deprecated)") // deprecated
 	rootCmd.Flags().BoolVar(&launchBrowser, "launch-browser", false, "open hypervisor web ui (hypervisor only) with system browser")
+	rootCmd.Flags().BoolVar(&localServer, "local-server", false, "force skywire-visor to connect to local server")
 }
 
 var rootCmd = &cobra.Command{
@@ -116,6 +121,10 @@ var rootCmd = &cobra.Command{
 		defer stopPProf()
 
 		conf := initConfig(log, args, confPath)
+		err = initAddresses(conf, log)
+		if err != nil {
+			log.Fatal("Servers list not avialble, both from skycoin.com and your local backup")
+		}
 
 		v, ok := visor.NewVisor(conf, restartCtx)
 		if !ok {
@@ -262,6 +271,98 @@ func initConfig(mLog *logging.MasterLogger, args []string, confPath string) *vis
 	return conf
 }
 
+func initAddresses(conf *visorconfig.V1, mLog *logging.MasterLogger) error {
+	var fetchStatus bool
+	var serversListYml []byte
+	var servers serversList
+	var err error
+	log := mLog.PackageLogger("visor:config")
+
+	// trying to get servers list from skycoin, and save it in local
+	for !fetchStatus {
+		log.Info("Trying to fetch servers list from skycoin")
+		resp, err := http.Get(conf.ServersListAddress)
+		if err != nil {
+			log.Warn("Error during fetching servers list from skycoin")
+			break
+		}
+		defer func() {
+			err := resp.Body.Close()
+			if err != nil {
+				log.Warn(err)
+			}
+		}()
+		serversListYml, err = io.ReadAll(resp.Body)
+		if err != nil {
+			log.Warn("Error during fetching servers list from skycoin")
+			break
+		}
+		log.Info("Servers list fetched from skycoin")
+
+		out, err := os.Create(defaultServersName)
+		if err != nil {
+			log.Warn("Cannot create backup servers list file")
+		}
+		defer func() {
+			err := out.Close()
+			if err != nil {
+				log.Warn(err)
+			}
+		}()
+		_, err = io.Copy(out, resp.Body)
+		if err != nil {
+			log.Warn("Cannot save backup servers list file")
+		}
+		log.Info("Servers list backup saved")
+		fetchStatus = true
+	}
+	// if servers list not reached from skycoin, use stored backup file
+	for !fetchStatus {
+		log.Info("Trying to fetch servers list from stored backup")
+		filename := filepath.Clean(defaultServersName)
+		serversListYml, err = ioutil.ReadFile(filename)
+		if err != nil {
+			log.Warn("Cannot find backup file in path")
+			break
+		}
+		log.Info("Servers list fetched from backup file")
+		fetchStatus = true
+	}
+	// update conf values
+	if fetchStatus {
+		err := yaml.Unmarshal(serversListYml, &servers)
+		if err != nil {
+			log.Fatal("Error during parsing servers list")
+			return err
+		}
+
+		if conf.IsTest {
+			setServersConfig(conf, log, servers.Test)
+		} else if localServer || checkLocalTime() {
+			setServersConfig(conf, log, servers.Local)
+		} else {
+			setServersConfig(conf, log, servers.Worldwide)
+		}
+		return nil
+	}
+	return err
+}
+
+func setServersConfig(conf *visorconfig.V1, log *logging.Logger, servers []serversData) {
+	randomServer := ((time.Now().Unix() % 11) % int64(len(servers)))
+	conf.Dmsg.Discovery = servers[randomServer].Dmsg
+	conf.Transport.AddressResolver = servers[randomServer].AddressResolver
+	conf.Transport.Discovery = servers[randomServer].Transport
+	conf.Routing.RouteFinder = servers[randomServer].Routing
+	conf.UptimeTracker.Addr = servers[randomServer].UptimeTracker
+	conf.Launcher.Discovery.ServiceDisc = servers[randomServer].Launcher
+	log.Infof("The %s selected", servers[randomServer].Name)
+}
+
+func checkLocalTime() bool {
+	return time.Now().UTC().Add(8*time.Hour).Format("2006-01-02 15:04:05 Mon") == time.Now().Local().Format("2006-01-02 15:04:05 Mon")
+}
+
 func runBrowser(conf *visorconfig.V1, log *logging.MasterLogger) {
 	if conf.Hypervisor == nil {
 		log.Errorln("Cannot start browser with a regular visor")
@@ -306,4 +407,20 @@ func checkHvIsRunning(addr string, retries int) bool {
 		}
 	}
 	return false
+}
+
+type serversList struct {
+	Test      []serversData
+	Local     []serversData
+	Worldwide []serversData
+}
+
+type serversData struct {
+	Name            string
+	Dmsg            string
+	Transport       string
+	AddressResolver string
+	Routing         string
+	UptimeTracker   string
+	Launcher        string
 }

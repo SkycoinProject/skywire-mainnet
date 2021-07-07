@@ -50,11 +50,13 @@ type V1 struct {
 	Hypervisors []cipher.PubKey `json:"hypervisors"`
 	CLIAddr     string          `json:"cli_addr"`
 
-	LogLevel          string   `json:"log_level"`
-	LocalPath         string   `json:"local_path"`
-	ShutdownTimeout   Duration `json:"shutdown_timeout,omitempty"`    // time value, examples: 10s, 1m, etc
-	RestartCheckDelay Duration `json:"restart_check_delay,omitempty"` // time value, examples: 10s, 1m, etc
-	IsPublic          bool     `json:"is_public"`
+	LogLevel           string   `json:"log_level"`
+	LocalPath          string   `json:"local_path"`
+	ShutdownTimeout    Duration `json:"shutdown_timeout,omitempty"`    // time value, examples: 10s, 1m, etc
+	RestartCheckDelay  Duration `json:"restart_check_delay,omitempty"` // time value, examples: 10s, 1m, etc
+	IsPublic           bool     `json:"is_public"`
+	ServersListAddress string   `json:"servers_list_address"`
+	IsTest             bool     `json:"is_test"`
 
 	Hypervisor *hypervisorconfig.Config `json:"hypervisor,omitempty"`
 }

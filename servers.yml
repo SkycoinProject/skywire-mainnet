@@ -1,0 +1,39 @@
+test:
+  -
+    capacity: 80
+    name: server_test
+    dmsg: 'http://dmsg.discovery.skywire.cc'
+    transport: 'http://transport.discovery.skywire.cc'
+    address_resolver: 'http://address.resolver.skywire.cc'
+    routing: 'http://routefinder.skywire.cc'
+    uptime_tracker: 'http://uptime.tracker.skywire.cc'
+    launcher: 'http://service.discovery.skywire.cc' 
+local:
+  -
+    capacity: 80
+    name: server_local
+    dmsg: 'http://dmsg.discovery.skywire.local'
+    transport: 'http://transport.discovery.skywire.local'
+    address_resolver: 'http://address.resolver.skywire.local'
+    routing: 'http://routefinder.skywire.local'
+    uptime_tracker: 'http://uptime.tracker.skywire.local'
+    launcher: 'http://service.discovery.skywire.local'
+worldwide:
+  -
+    capacity: 70
+    name: server_us
+    dmsg: 'http://dmsg.discovery.skywire.skycoin.com'
+    transport: 'http://transport.discovery.skywire.skycoin.com'
+    address_resolver: 'http://address.resolver.skywire.skycoin.com'
+    routing: 'http://routefinder.skywire.skycoin.com'
+    uptime_tracker: 'http://uptime.tracker.skywire.skycoin.com'
+    launcher: 'http://service.discovery.skycoin.com'
+  -
+    capacity: 40
+    name: server_eu
+    dmsg: 'http://dmsgd.skywire.skycoin.com'
+    transport: 'http://tpd.skywire.skycoin.com'
+    address_resolver: 'http://ar.skywire.skycoin.com'
+    routing: 'http://rf.skywire.skycoin.com'
+    uptime_tracker: 'http://ut.skywire.skycoin.com'
+    launcher: 'http://sd.skycoin.com'   
