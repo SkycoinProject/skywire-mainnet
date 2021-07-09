@@ -36,7 +36,7 @@ type Entry struct {
 	ID uuid.UUID `json:"t_id"`
 
 	// Edges contains the public keys of the Transport's edge nodes
-	// (should only have 2 edges and the first edge is transport original initiator).
+	// Edges should always be sorted in ascending order
 	Edges [2]cipher.PubKey `json:"edges"`
 
 	// Type represents the transport type.
@@ -50,15 +50,14 @@ type Entry struct {
 }
 
 // MakeEntry creates a new transport entry
-func MakeEntry(initiator, target cipher.PubKey, netType network.Type, public bool, label Label) Entry {
+func MakeEntry(aPK, bPK cipher.PubKey, netType network.Type, public bool, label Label) Entry {
 	entry := Entry{
-		ID:     MakeTransportID(initiator, target, netType),
+		ID:     MakeTransportID(aPK, bPK, netType),
 		Type:   netType,
 		Public: public,
 		Label:  label,
+		Edges:  SortEdges(aPK, bPK),
 	}
-	entry.Edges[0] = initiator
-	entry.Edges[1] = target
 	return entry
 }
 
@@ -105,8 +104,8 @@ func (e *Entry) String() string {
 	res += fmt.Sprintf("\ttype: %s\n", e.Type)
 	res += fmt.Sprintf("\tid: %s\n", e.ID)
 	res += "\tedges:\n"
-	res += fmt.Sprintf("\t\tedge 1 (initiator): %s\n", e.Edges[0])
-	res += fmt.Sprintf("\t\tedge 2 (target): %s\n", e.Edges[1])
+	res += fmt.Sprintf("\t\tedge 1: %s\n", e.Edges[0])
+	res += fmt.Sprintf("\t\tedge 2: %s\n", e.Edges[1])
 	return res
 }
 

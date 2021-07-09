@@ -35,7 +35,6 @@ type TransportResponse struct {
 	Local  cipher.PubKey
 	Remote cipher.PubKey
 	Type   network.Type
-	IsUp   bool
 }
 
 // BoolResponse is a simple boolean wrapped in structure for RPC responses
@@ -56,7 +55,6 @@ func (gw *TransportGateway) AddTransport(req TransportRequest, res *TransportRes
 	res.Local = gw.tm.Local()
 	res.Remote = tp.Remote()
 	res.Type = tp.Type()
-	res.IsUp = tp.IsUp()
 	return nil
 }
 
@@ -87,7 +85,6 @@ func (gw *TransportGateway) GetTransports(_ struct{}, res *[]TransportResponse) 
 			Local:  gw.tm.Local(),
 			Remote: tp.Remote(),
 			Type:   tp.Type(),
-			IsUp:   tp.IsUp(),
 		}
 		*res = append(*res, tResp)
 	}

@@ -23,12 +23,9 @@ const (
 	responseInvalidEntry
 )
 
-func makeEntryFromTpConn(conn network.Conn, isInitiator bool) Entry {
-	initiator, target := conn.LocalPK(), conn.RemotePK()
-	if !isInitiator {
-		initiator, target = target, initiator
-	}
-	return MakeEntry(initiator, target, conn.Network(), true, LabelUser)
+func makeEntryFromTpConn(conn network.Conn) Entry {
+	aPK, bPK := conn.LocalPK(), conn.RemotePK()
+	return MakeEntry(aPK, bPK, conn.Network(), true, LabelUser)
 }
 
 func compareEntries(expected, received *Entry) error {
@@ -99,7 +96,7 @@ func (hs SettlementHS) Do(ctx context.Context, dc DiscoveryClient, conn network.
 func MakeSettlementHS(init bool) SettlementHS {
 	// initiating logic.
 	initHS := func(ctx context.Context, dc DiscoveryClient, conn network.Conn, sk cipher.SecKey) (err error) {
-		entry := makeEntryFromTpConn(conn, true)
+		entry := makeEntryFromTpConn(conn)
 
 		// TODO(evanlinjin): Probably not needed as this is called in mTp already. Need to double check.
 		//defer func() {
@@ -139,7 +136,7 @@ func MakeSettlementHS(init bool) SettlementHS {
 
 	// responding logic.
 	respHS := func(ctx context.Context, dc DiscoveryClient, conn network.Conn, sk cipher.SecKey) error {
-		entry := makeEntryFromTpConn(conn, false)
+		entry := makeEntryFromTpConn(conn)
 
 		// receive, verify and sign entry.
 		recvSE, err := receiveAndVerifyEntry(conn, &entry, conn.RemotePK())

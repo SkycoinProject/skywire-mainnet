@@ -129,6 +129,16 @@ func (c *dmsgConnAdapter) RemotePort() uint16 {
 	return c.RawRemoteAddr().Port
 }
 
+// LocalAddr implements Conn interface
+func (c *dmsgConnAdapter) LocalRawAddr() net.Addr {
+	return c.RawLocalAddr()
+}
+
+// RemoteAddr implements Conn interface
+func (c *dmsgConnAdapter) RemoteRawAddr() net.Addr {
+	return c.RawRemoteAddr()
+}
+
 // Network implements Conn interface
 func (c *dmsgConnAdapter) Network() Type {
 	return DMSG

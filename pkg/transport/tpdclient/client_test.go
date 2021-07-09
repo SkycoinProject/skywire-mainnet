@@ -221,27 +221,6 @@ func TestGetTransportsByEdge(t *testing.T) {
 	assert.True(t, entries[0].IsUp)
 }
 
-func TestUpdateStatuses(t *testing.T) {
-	entry := &transport.EntryWithStatus{Entry: newTestEntry(), IsUp: true}
-	srv := httptest.NewServer(authHandler(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/statuses", r.URL.String())
-		statuses := make([]*transport.Status, 0)
-		require.NoError(t, json.NewDecoder(r.Body).Decode(&statuses))
-		require.Len(t, statuses, 1)
-		assert.Equal(t, entry.Entry.ID, statuses[0].ID)
-		require.NoError(t, json.NewEncoder(w).Encode([]*transport.EntryWithStatus{entry}))
-	})))
-	defer srv.Close()
-
-	c, err := NewHTTP(srv.URL, testPubKey, testSecKey)
-	require.NoError(t, err)
-	entries, err := c.UpdateStatuses(context.Background(), &transport.Status{ID: entry.Entry.ID, IsUp: false})
-	require.NoError(t, err)
-
-	require.Len(t, entries, 1)
-	assert.Equal(t, entry.Entry, entries[0].Entry)
-}
-
 func authHandler(t *testing.T, next http.Handler) http.Handler {
 	r := chi.NewRouter()
 

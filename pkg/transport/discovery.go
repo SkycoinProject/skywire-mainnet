@@ -18,7 +18,6 @@ type DiscoveryClient interface {
 	GetTransportByID(ctx context.Context, id uuid.UUID) (*EntryWithStatus, error)
 	GetTransportsByEdge(ctx context.Context, pk cipher.PubKey) ([]*EntryWithStatus, error)
 	DeleteTransport(ctx context.Context, id uuid.UUID) error
-	UpdateStatuses(ctx context.Context, statuses ...*Status) ([]*EntryWithStatus, error)
 	Health(ctx context.Context) (int, error)
 }
 

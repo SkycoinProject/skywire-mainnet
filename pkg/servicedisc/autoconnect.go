@@ -55,7 +55,7 @@ func (a *autoconnector) Run(ctx context.Context) error {
 			a.log.Errorf("Cannot fetch public services: %s", err)
 		}
 
-		tps := a.updateTransports()
+		tps := a.tm.GetTransportsByLabel(transport.LabelAutomatic)
 		absent := a.filterDuplicates(addresses, tps)
 		for _, pk := range absent {
 			a.log.WithField("pk", pk).Infoln("Adding transport to public visor")
@@ -67,21 +67,6 @@ func (a *autoconnector) Run(ctx context.Context) error {
 			logger.Infoln("Added transport to public visor")
 		}
 	}
-}
-
-// Remove all inactive automatic transports and return all active
-// automatic transports
-func (a *autoconnector) updateTransports() []*transport.ManagedTransport {
-	tps := a.tm.GetTransportsByLabel(transport.LabelAutomatic)
-	var tpsActive []*transport.ManagedTransport
-	for _, tr := range tps {
-		if !tr.IsUp() {
-			a.tm.DeleteTransport(tr.Entry.ID)
-		} else {
-			tpsActive = append(tpsActive, tr)
-		}
-	}
-	return tpsActive
 }
 
 func (a *autoconnector) fetchPubAddresses(ctx context.Context) ([]cipher.PubKey, error) {

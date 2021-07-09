@@ -34,6 +34,12 @@ type Conn interface {
 	// This is not underlying OS port, but port within skywire network
 	RemotePort() uint16
 
+	// LocalRawAddr returns local raw network address (not skywire address)
+	LocalRawAddr() net.Addr
+
+	// RemoteRawAddr returns remote raw network address (not skywire address)
+	RemoteRawAddr() net.Addr
+
 	// Network returns network of connection
 	Network() Type
 }
@@ -105,6 +111,16 @@ func (c *conn) LocalAddr() net.Addr {
 // RemoteAddr implements net.Conn
 func (c *conn) RemoteAddr() net.Addr {
 	return c.rAddr
+}
+
+// LocalAddr implements net.Conn
+func (c *conn) LocalRawAddr() net.Addr {
+	return c.Conn.LocalAddr()
+}
+
+// RemoteAddr implements net.Conn
+func (c *conn) RemoteRawAddr() net.Addr {
+	return c.Conn.RemoteAddr()
 }
 
 // Close implements net.Conn

@@ -106,10 +106,6 @@ var addTpCmd = &cobra.Command{
 				logger.WithError(err).Fatalf("Failed to establish %v transport", transportType)
 			}
 
-			if !tp.IsUp {
-				logger.Fatalf("Established %v transport to %v with ID %v, but it isn't up", transportType, pk, tp.ID)
-			}
-
 			logger.Infof("Established %v transport to %v", transportType, pk)
 		} else {
 			transportTypes := []network.Type{
@@ -148,14 +144,14 @@ var rmTpCmd = &cobra.Command{
 func printTransports(tps ...*visor.TransportSummary) {
 	sortTransports(tps...)
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 5, ' ', tabwriter.TabIndent)
-	_, err := fmt.Fprintln(w, "type\tid\tremote\tmode\tlabel\tis_up")
+	_, err := fmt.Fprintln(w, "type\tid\tremote\tmode\tlabel")
 	internal.Catch(err)
 	for _, tp := range tps {
 		tpMode := "regular"
 		if tp.IsSetup {
 			tpMode = "setup"
 		}
-		_, err = fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%v\n", tp.Type, tp.ID, tp.Remote, tpMode, tp.Label, tp.IsUp)
+		_, err = fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", tp.Type, tp.ID, tp.Remote, tpMode, tp.Label)
 		internal.Catch(err)
 	}
 	internal.Catch(w.Flush())

@@ -27,7 +27,4 @@ func TestNewDiscoveryMock(t *testing.T) {
 	entriesWS, err := dc.GetTransportsByEdge(context.TODO(), pk1)
 	require.NoError(t, err)
 	require.Equal(t, entry.Edges, entriesWS[0].Entry.Edges)
-
-	_, err = dc.UpdateStatuses(context.TODO(), &transport.Status{})
-	require.NoError(t, err)
 }
