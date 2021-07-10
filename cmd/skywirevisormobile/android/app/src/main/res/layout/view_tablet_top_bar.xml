@@ -1,0 +1,60 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/tablet_top_bar_height"
+    android:orientation="vertical"
+    android:paddingLeft="25dp"
+    android:paddingRight="25dp">
+
+    <ImageView
+        android:layout_width="124dp"
+        android:layout_height="21dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="1dp"
+        app:srcCompat="@drawable/logo_vpn" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="55dp"
+        android:orientation="horizontal">
+
+        <com.skywire.skycoin.vpn.controls.TabletTopBarTab
+            android:id="@+id/tabStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="4dp"
+            app:icon_text="\ue8ac"
+            app:label="@string/tmp_status_page_title" />
+
+        <com.skywire.skycoin.vpn.controls.TabletTopBarTab
+            android:id="@+id/tabServers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="4dp"
+            app:icon_text="\ue896"
+            app:label="@string/tmp_select_server_title" />
+
+        <com.skywire.skycoin.vpn.controls.TabletTopBarTab
+            android:id="@+id/tabSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="4dp"
+            app:icon_text="\ue8b8"
+            app:label="@string/tmp_options_title" />
+
+    </LinearLayout>
+
+    <com.skywire.skycoin.vpn.controls.TabletTopBarStats
+        android:id="@+id/stats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|center_vertical" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/box_row_layout_separator_height"
+        android:layout_gravity="bottom"
+        android:background="@color/box_separator" />
+
+</FrameLayout>

@@ -1,0 +1,23 @@
+<com.skywire.skycoin.vpn.controls.BoxRowLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:clickable="false"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:longClickable="false"
+    android:screenReaderFocusable="false"
+    app:add_extra_padding_for_tablets="true"
+    app:hide_separator="true"
+    app:ignore_clicks="true"
+    app:ignore_margins="true">
+
+    <LinearLayout
+        android:id="@+id/buttonsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" />
+
+</com.skywire.skycoin.vpn.controls.BoxRowLayout>

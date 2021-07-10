@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#215f9e</color>
+    <color name="secondary">#a7a7a7</color>
+    <color name="accent">#5a98f4</color>
+
+    <color name="normal_text">#ffffff</color>
+    <color name="subtle_text">#80ffffff</color>
+    <color name="modal_window_text">#555555</color>
+    <color name="modal_window_light_text">#999999</color>
+    <color name="modal_window_super_light_text">#bbbbbb</color>
+    <color name="modal_window_hint">#5790ca</color>
+
+    <color name="black_background">#88000000</color>
+    <color name="black_background_ripple">#314560</color>
+
+    <color name="bar_background">#1a2739</color>
+    <color name="bar_separator">#28384e</color>
+    <color name="bar_selected">#162334</color>
+
+    <color name="box_separator">#45a7cbff</color>
+    <color name="box_ripple">#394f6d</color>
+    <color name="clear_box_ripple">#bcc4d0</color>
+    <color name="primary_button_ripple">#113050</color>
+    <color name="secondary_button_ripple">#727272</color>
+
+    <color name="dark_background_separator">#26ffffff</color>
+    <color name="modal_separator">#33215f9e</color>
+
+    <color name="tablet_selected_tab_background">#77000000</color>
+
+    <color name="white">#ffffff</color>
+    <color name="green">#72c012</color>
+    <color name="yellow">#ffa500</color>
+    <color name="red">#ff393f</color>
+
+    <color name="gold">#ffa500</color>
+    <color name="silver">#b8bcc2</color>
+    <color name="bronze">#995d10</color>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.skywire.skycoin.vpn.controls.ModalBase xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/modalBase"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    app:remove_internal_padding="true"
+    app:title="@string/general_options">
+
+    <LinearLayout
+        android:id="@+id/container"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+</com.skywire.skycoin.vpn.controls.ModalBase>

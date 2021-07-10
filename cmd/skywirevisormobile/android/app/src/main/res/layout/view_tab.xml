@@ -1,0 +1,57 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bar_background"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/bar_separator"></FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/internalContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/box_ripple"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:translationY="-1dp">
+
+            <TextView
+                android:id="@+id/textIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/material_font"
+                android:text="\ue8b6"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/textName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginRight="5dp"
+                android:gravity="center_horizontal"
+                android:text="TextView"
+                android:textSize="@dimen/micro_text_size" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/rightBorder"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/bar_separator"></FrameLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,84 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.skywire.skycoin.vpn.activities.settings.SettingsOption
+                android:id="@+id/optionApps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                app:box_row_type="single"
+                app:description="@string/tmp_options_apps_description"
+                app:title="@string/tmp_options_apps_title" />
+
+            <com.skywire.skycoin.vpn.activities.settings.SettingsOption
+                android:id="@+id/optionShowIp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:box_row_type="top"
+                app:description="@string/tmp_options_show_ip_description"
+                app:title="@string/tmp_options_show_ip_title" />
+
+            <com.skywire.skycoin.vpn.activities.settings.SettingsOption
+                android:id="@+id/optionKillSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:box_row_type="middle"
+                app:description="@string/tmp_options_kill_switch_description"
+                app:title="@string/tmp_options_kill_switch_title" />
+
+            <com.skywire.skycoin.vpn.activities.settings.SettingsOption
+                android:id="@+id/optionResetAfterErrors"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:description="@string/tmp_options_reset_after_errors_description"
+                app:title="@string/tmp_options_reset_after_errors_title" />
+
+            <com.skywire.skycoin.vpn.activities.settings.SettingsOption
+                android:id="@+id/optionProtectBeforeConnecting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:description="@string/tmp_options_protect_before_connecting_description"
+                app:title="@string/tmp_options_protect_before_connecting_title" />
+
+            <com.skywire.skycoin.vpn.activities.settings.SettingsOption
+                android:id="@+id/optionStartOnBoot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:box_row_type="bottom"
+                app:description="@string/tmp_options_start_on_boot_description"
+                app:title="@string/tmp_options_start_on_boot_title" />
+
+            <com.skywire.skycoin.vpn.activities.settings.SettingsOption
+                android:id="@+id/optionDataUnits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:box_row_type="top"
+                app:description="@string/tmp_options_data_units_bits_speed_and_bytes_volume"
+                app:hide_checkbox="true"
+                app:title="@string/tmp_options_data_units_title" />
+
+            <com.skywire.skycoin.vpn.activities.settings.SettingsOption
+                android:id="@+id/optionDns"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:box_row_type="bottom"
+                app:description="@string/tmp_options_dns_default"
+                app:hide_checkbox="true"
+                app:title="@string/tmp_options_dns_title" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>

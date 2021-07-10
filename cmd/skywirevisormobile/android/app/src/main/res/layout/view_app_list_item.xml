@@ -1,0 +1,67 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/box_ripple"
+    android:clickable="false"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:longClickable="false"
+    android:screenReaderFocusable="false">
+
+    <LinearLayout
+        android:id="@+id/internalLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:paddingLeft="@dimen/box_row_layout_horizontal_padding"
+        android:paddingTop="@dimen/box_row_layout_vertical_padding"
+        android:paddingRight="@dimen/box_row_layout_horizontal_padding"
+        android:paddingBottom="@dimen/box_row_layout_vertical_padding">
+
+        <ImageView
+            android:id="@+id/imageIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical" />
+
+        <FrameLayout
+            android:id="@+id/layoutSeparator"
+            android:layout_width="16dp"
+            android:layout_height="match_parent">
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/textAppName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="@dimen/check_box_separation"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="@dimen/normal_text_size" />
+
+        <CheckBox
+            android:id="@+id/checkSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@android:color/transparent"
+            android:clickable="false" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/box_row_layout_separator_height"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="@dimen/box_row_layout_separator_combined_horizontal_margin"
+        android:layout_marginRight="@dimen/box_row_layout_separator_combined_horizontal_margin"
+        android:background="@color/box_separator" />
+
+</FrameLayout>

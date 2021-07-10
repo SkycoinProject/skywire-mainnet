@@ -1,0 +1,92 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/skycoin_font_bold"
+                    android:gravity="center_horizontal"
+                    android:text="@string/tmp_status_disconnected_title"
+                    android:textSize="20sp" />
+
+                <com.skywire.skycoin.vpn.activities.start.disconnected.StartButton
+                    android:id="@+id/startButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="-15dp" />
+
+                <com.skywire.skycoin.vpn.activities.start.disconnected.CurrentServerButton
+                    android:id="@+id/viewCurrentServerButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="-20dp" />
+
+                <TextView
+                    android:id="@+id/textServerNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/status_page_horizontal_margin"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="@dimen/status_page_horizontal_margin"
+                    android:gravity="center_horizontal"
+                    android:text="Server note"
+                    android:textSize="@dimen/mini_text_size" />
+
+                <TextView
+                    android:id="@+id/textLastError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/status_page_horizontal_margin"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="@dimen/status_page_horizontal_margin"
+                    android:gravity="center_horizontal"
+                    android:text="Last error:"
+                    android:textColor="@color/red"
+                    android:textSize="@dimen/mini_text_size" />
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/rightContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1">
+
+                <com.skywire.skycoin.vpn.activities.start.StartViewRightPanel
+                    android:id="@+id/rightPanel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    app:hide_bottom_part="true" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>

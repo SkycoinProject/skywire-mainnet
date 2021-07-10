@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.skywire.skycoin.vpn.controls.ModalBase xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    app:title="@string/server_info_title">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="@string/server_info_basic_info_title"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/title_text_size" />
+
+            <TextView
+                android:id="@+id/textName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Name:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textCustomName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Custom name:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textPk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Public key:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Note:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textPersonalNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Personal note:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textLastTimeUsed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Last time used:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="@string/server_info_location_title"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/title_text_size" />
+
+            <TextView
+                android:id="@+id/textCountry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Country:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textCountryCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Country code:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Location:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/connectivityContainer"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="@string/server_info_connectivity_title"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/title_text_size" />
+
+            <TextView
+                android:id="@+id/textCongestion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Congestion:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textCongestionRating"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Congestion rating:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textLatency"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Latency:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textLatencyRating"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Latency rating:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textHops"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Hops:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/specialContainer"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="@string/server_info_special_conditions_title"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/title_text_size" />
+
+            <TextView
+                android:id="@+id/textIsCurrent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Is current server:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textIsFavorite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Is favorite:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textBlocked"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Is blocked:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textInHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Is in the history:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textHasPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Has password:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textEnteredManually"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Entered manually:"
+                android:textColor="@color/modal_window_text"
+                android:textSize="@dimen/normal_text_size" />
+
+        </LinearLayout>
+
+        <com.skywire.skycoin.vpn.controls.ModalWindowButton
+            android:id="@+id/buttonClose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:text="@string/general_close" />
+
+    </LinearLayout>
+
+</com.skywire.skycoin.vpn.controls.ModalBase>

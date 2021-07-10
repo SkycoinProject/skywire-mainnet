@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.skywire.skycoin.vpn.controls.ModalBase xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/modalBase"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/container"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/editContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/modal_window_hint"
+            app:hintTextColor="@color/modal_window_hint"
+            android:hint="Hint">
+
+            <EditText
+                android:id="@+id/editValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/primary"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLength="100"
+                android:textColor="@color/primary"
+                android:textColorHighlight="@color/modal_window_hint"
+                android:textColorHint="@color/modal_window_hint" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
+
+            <com.skywire.skycoin.vpn.controls.ModalWindowButton
+                android:id="@+id/buttonCancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="4dp"
+                android:layout_weight="1"
+                app:text="@string/tmp_edit_value_cancel_button"
+                app:use_secondary_color="true" />
+
+            <com.skywire.skycoin.vpn.controls.ModalWindowButton
+                android:id="@+id/buttonConfirm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_weight="1"
+                app:text="@string/tmp_edit_value_apply_button" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.skywire.skycoin.vpn.controls.ModalBase>

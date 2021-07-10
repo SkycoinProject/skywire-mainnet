@@ -1,0 +1,63 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_bar_internal_height"
+        android:background="@color/bar_background"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="@dimen/top_bar_internal_height"
+            android:layout_height="@dimen/top_bar_internal_height">
+
+            <com.skywire.skycoin.vpn.controls.TopBarButton
+                android:id="@+id/buttonLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="@dimen/top_bar_internal_height"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/textTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Title"
+                android:textColor="@color/normal_text"
+                android:textSize="@dimen/big_text_size" />
+
+            <ImageView
+                android:id="@+id/imageIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                app:srcCompat="@drawable/logo_vpn" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="@dimen/top_bar_internal_height"
+            android:layout_height="@dimen/top_bar_internal_height">
+
+        </FrameLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/bar_separator">
+
+    </FrameLayout>
+</LinearLayout>

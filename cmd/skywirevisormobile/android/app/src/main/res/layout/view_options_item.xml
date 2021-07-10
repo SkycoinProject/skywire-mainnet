@@ -1,0 +1,43 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainContainer"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    android:background="@drawable/clear_box_ripple"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/modal_window_horizontal_margin"
+    android:paddingRight="@dimen/modal_window_horizontal_margin">
+
+    <ImageView
+        android:id="@+id/imageBitmap"
+        android:layout_width="wrap_content"
+        android:layout_height="22dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="10dp"
+        android:scaleType="centerInside"
+        tools:srcCompat="@drawable/ab" />
+
+    <TextView
+        android:id="@+id/textIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginRight="10dp"
+        android:fontFamily="@font/material_font"
+        android:text="\ue8b6"
+        android:textColor="@color/modal_window_text"
+        android:textSize="16dp" />
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="TextView"
+        android:textColor="@color/modal_window_text"
+        android:textSize="@dimen/normal_text_size"
+        android:translationY="-1dp" />
+
+</LinearLayout>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TopBarButton">
+        <attr name="material_icon" format="enum">
+            <enum name="menu" value="0"/>
+            <enum name="back" value="1"/>
+        </attr>
+    </declare-styleable>
+    <declare-styleable name="TopBar">
+        <attr name="title" format="string" />
+        <attr name="left_button_icon" format="enum">
+            <enum name="menu" value="0"/>
+            <enum name="back" value="1"/>
+        </attr>
+    </declare-styleable>
+    <declare-styleable name="BoxRowLayout">
+        <attr name="box_row_type" format="enum">
+            <enum name="top" value="0"/>
+            <enum name="middle" value="1"/>
+            <enum name="bottom" value="2"/>
+            <enum name="single" value="3"/>
+        </attr>
+        <attr name="add_extra_padding_for_tablets" format="boolean" />
+        <attr name="ignore_margins" format="boolean" />
+        <attr name="ignore_clicks" format="boolean" />
+        <attr name="hide_separator" format="boolean" />
+        <attr name="use_big_fast_click_prevention" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="SettingsOption">
+        <attr name="box_row_type" />
+        <attr name="title" />
+        <attr name="description" format="string" />
+        <attr name="hide_checkbox" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="ServerListTopTab">
+        <attr name="text" format="string" />
+        <attr name="position" format="enum">
+            <enum name="middle" value="0"/>
+            <enum name="left" value="1"/>
+            <enum name="right" value="2"/>
+        </attr>
+    </declare-styleable>
+    <declare-styleable name="ServerListOptionButton">
+        <attr name="content" format="string" />
+    </declare-styleable>
+    <declare-styleable name="Tab">
+        <attr name="show_right_border" format="boolean" />
+        <attr name="icon_text" format="string" />
+        <attr name="lower_text" format="string" />
+    </declare-styleable>
+    <declare-styleable name="ModalBase">
+        <attr name="title" />
+        <attr name="remove_internal_padding" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="OptionsItem">
+        <attr name="icon_text" />
+        <attr name="text" />
+    </declare-styleable>
+    <declare-styleable name="ModalWindowButton">
+        <attr name="text" />
+        <attr name="use_secondary_color" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="ServerName">
+        <attr name="default_name" format="string" />
+        <attr name="text_size" format="dimension" />
+        <attr name="center_text" format="boolean" />
+        <attr name="show_config_icon" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="Select">
+        <attr name="hint" format="string" />
+    </declare-styleable>
+    <declare-styleable name="SettingsButton">
+        <attr name="use_note_icon" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="StartViewRightPanel">
+        <attr name="hide_bottom_part" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="TabletTopBarTab">
+        <attr name="icon_text" />
+        <attr name="label" format="string" />
+    </declare-styleable>
+</resources>

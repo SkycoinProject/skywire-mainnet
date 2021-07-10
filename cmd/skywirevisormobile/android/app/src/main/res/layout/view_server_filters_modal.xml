@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.skywire.skycoin.vpn.controls.ModalBase xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    app:title="@string/filter_server_title">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.skywire.skycoin.vpn.controls.Select
+            android:id="@+id/selectCountry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:hint="@string/filter_server_country_label"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/modal_window_hint"
+            app:hintTextColor="@color/modal_window_hint"
+            android:layout_marginBottom="10dp">
+
+            <EditText
+                android:id="@+id/editName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/primary"
+                android:hint="@string/filter_server_name_label"
+                android:inputType="text"
+                android:maxLength="100"
+                android:textColor="@color/primary"
+                android:textColorHighlight="@color/modal_window_hint"
+                android:textColorHint="@color/modal_window_hint" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/modal_window_hint"
+            app:hintTextColor="@color/modal_window_hint"
+            android:layout_marginBottom="10dp">
+
+            <EditText
+                android:id="@+id/editLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/primary"
+                android:hint="@string/filter_server_location_label"
+                android:inputType="text"
+                android:maxLength="100"
+                android:textColor="@color/primary"
+                android:textColorHighlight="@color/modal_window_hint"
+                android:textColorHint="@color/modal_window_hint" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/modal_window_hint"
+            app:hintTextColor="@color/modal_window_hint"
+            android:layout_marginBottom="10dp">
+
+            <EditText
+                android:id="@+id/editPk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/primary"
+                android:hint="@string/filter_server_public_key_label"
+                android:inputType="text"
+                android:maxLength="66"
+                android:textColor="@color/primary"
+                android:textColorHighlight="@color/modal_window_hint"
+                android:textColorHint="@color/modal_window_hint" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/modal_window_hint"
+            app:hintTextColor="@color/modal_window_hint">
+
+            <EditText
+                android:id="@+id/editNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/primary"
+                android:hint="@string/filter_server_note_label"
+                android:inputType="text"
+                android:maxLength="100"
+                android:textColor="@color/primary"
+                android:textColorHighlight="@color/modal_window_hint"
+                android:textColorHint="@color/modal_window_hint" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
+
+            <com.skywire.skycoin.vpn.controls.ModalWindowButton
+                android:id="@+id/buttonCancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="4dp"
+                android:layout_weight="1"
+                app:text="@string/general_cancel"
+                app:use_secondary_color="true" />
+
+            <com.skywire.skycoin.vpn.controls.ModalWindowButton
+                android:id="@+id/buttonConfirm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_weight="1"
+                app:text="@string/filter_server_filter_button" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.skywire.skycoin.vpn.controls.ModalBase>

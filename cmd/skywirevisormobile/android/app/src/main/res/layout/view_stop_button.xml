@@ -1,0 +1,61 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainLayout"
+    android:layout_width="match_parent"
+    android:layout_height="91dp"
+    android:paddingLeft="10dp"
+    android:paddingTop="15dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="15dp"
+    android:background="@drawable/red_btn">
+
+        <FrameLayout
+            android:id="@+id/internalContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/stop_btn_internal_area">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    app:srcCompat="@drawable/red_button_pattern_tiling" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal">
+
+                        <ProgressBar
+                            android:id="@+id/progressAnimation"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginRight="7dp"
+                            android:indeterminate="true"
+                            android:indeterminateTint="@color/normal_text"
+                            android:indeterminateTintMode="src_in" />
+
+                        <TextView
+                            android:id="@+id/textIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginRight="5dp"
+                            android:fontFamily="@font/material_font"
+                            android:gravity="center_vertical"
+                            android:text="\ue8ac"
+                            android:textSize="24dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/tmp_status_connected_disconnect"
+                            android:textSize="22dp"
+                            android:translationY="-2dp" />
+                </LinearLayout>
+        </FrameLayout>
+
+</FrameLayout>

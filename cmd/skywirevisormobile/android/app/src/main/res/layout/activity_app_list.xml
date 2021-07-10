@@ -1,0 +1,28 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.apps.AppsActivity">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/recycler"
+        android:scrollbars="vertical"
+        android:layout_marginTop="@dimen/top_bar_height"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_bar_shadow_height"
+        android:layout_marginTop="@dimen/top_bar_height"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/top_bar_shadow" />
+
+    <com.skywire.skycoin.vpn.controls.TopBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:left_button_icon="back"
+        app:title="@string/tmp_select_apps_title" />
+
+</FrameLayout>

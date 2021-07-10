@@ -1,0 +1,88 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainContainer"
+    android:layout_width="240dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/current_server_rounded_box">
+
+    <FrameLayout
+        android:id="@+id/internalContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/current_server_ripple"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="8dp">
+
+        <LinearLayout
+            android:id="@+id/serverContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imageFlag"
+                android:layout_width="24dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/flag_rounded_box"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/us" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <com.skywire.skycoin.vpn.controls.ServerName
+                    android:id="@+id/serverName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:default_name="@string/tmp_select_server_unnamed" />
+
+                <TextView
+                    android:id="@+id/textBottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:text="024ec474024ec474024ec474024ec474024ec474024ec474"
+                    android:textColor="@color/subtle_text"
+                    android:textSize="@dimen/small_text_size" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="1dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:background="@color/dark_background_separator"></FrameLayout>
+
+            <TextView
+                android:id="@+id/textTop2"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:fontFamily="@font/material_font"
+                android:text="\ue8b8"
+                android:textSize="20dp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textNoServer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/tmp_status_disconnected_no_server"
+            android:textSize="@dimen/normal_text_size"
+            android:translationY="-1dp" />
+
+    </FrameLayout>
+
+</FrameLayout>

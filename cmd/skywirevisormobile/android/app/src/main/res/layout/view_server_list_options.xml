@@ -1,0 +1,79 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <com.skywire.skycoin.vpn.controls.BoxRowLayout
+            android:id="@+id/tabsContainer"
+            android:layout_width="600dp"
+            android:layout_height="72dp"
+            android:layout_marginRight="-10dp"
+            app:box_row_type="single"
+            app:ignore_margins="true"
+            app:ignore_clicks="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <com.skywire.skycoin.vpn.activities.servers.ServerListTopTab
+                    android:id="@+id/tabPublic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:position="left"
+                    app:text="@string/tmp_select_server_public" />
+
+                <com.skywire.skycoin.vpn.activities.servers.ServerListTopTab
+                    android:id="@+id/tabHistory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:text="@string/tmp_select_server_history" />
+
+                <com.skywire.skycoin.vpn.activities.servers.ServerListTopTab
+                    android:id="@+id/tabFavorites"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:text="@string/tmp_select_server_favorites" />
+
+                <com.skywire.skycoin.vpn.activities.servers.ServerListTopTab
+                    android:id="@+id/tabBlocked"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:position="right"
+                    app:text="@string/tmp_select_server_blocked" />
+
+            </LinearLayout>
+
+        </com.skywire.skycoin.vpn.controls.BoxRowLayout>
+
+        <com.skywire.skycoin.vpn.activities.servers.ServerListOptionButton
+            android:id="@+id/buttonSort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:content="\ue164" />
+
+        <com.skywire.skycoin.vpn.activities.servers.ServerListOptionButton
+            android:id="@+id/buttonFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="-10dp"
+            app:content="\ue8b6" />
+
+        <com.skywire.skycoin.vpn.activities.servers.ServerListOptionButton
+            android:id="@+id/buttonAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="-10dp"
+            app:content="\ue145" />
+
+    </LinearLayout>
+
+</FrameLayout>

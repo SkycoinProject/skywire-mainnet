@@ -1,0 +1,11 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.skywire.skycoin.vpn.activities.start.MapBackground
+        android:id="@+id/background"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+
+</FrameLayout>

@@ -1,0 +1,114 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/internalContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/tab_bar_height">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="82dp">
+
+            <ProgressBar
+                android:id="@+id/loadingAnimation"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+            <LinearLayout
+                android:id="@+id/noResultsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.5"
+                    android:fontFamily="@font/material_font"
+                    android:gravity="center_horizontal"
+                    android:text="\ue88f"
+                    android:textSize="50dp" />
+
+                <TextView
+                    android:id="@+id/textNoResults"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="Empty"
+                    android:textSize="@dimen/normal_text_size" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomTabsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tab_bar_height"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal">
+
+        <com.skywire.skycoin.vpn.controls.Tab
+            android:id="@+id/tabPublic"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:icon_text="\ue896"
+            app:lower_text="@string/tmp_select_server_public" />
+
+        <com.skywire.skycoin.vpn.controls.Tab
+            android:id="@+id/tabHistory"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:icon_text="\ue889"
+            app:lower_text="@string/tmp_select_server_history" />
+
+        <com.skywire.skycoin.vpn.controls.Tab
+            android:id="@+id/tabFavorites"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:icon_text="\ue83a"
+            app:lower_text="@string/tmp_select_server_favorites" />
+
+        <com.skywire.skycoin.vpn.controls.Tab
+            android:id="@+id/tabBlocked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:icon_text="\ue899"
+            app:lower_text="@string/tmp_select_server_blocked"
+            app:show_right_border="false" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ImageBottomTabsShadow"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_bar_shadow_height"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="@dimen/tab_bar_height"
+        android:rotation="180"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/top_bar_shadow" />
+
+</FrameLayout>

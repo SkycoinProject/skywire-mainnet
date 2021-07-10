@@ -1,0 +1,54 @@
+<com.skywire.skycoin.vpn.controls.BoxRowLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:clickable="false"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:longClickable="false"
+    android:screenReaderFocusable="false"
+    app:add_extra_padding_for_tablets="true">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/check_box_separation"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textOption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Option"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/textDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Este es el texto con la descripción de para qué se supone que sirve esta opción de selección de apps."
+                android:textColor="@color/subtle_text"
+                android:textSize="@dimen/small_text_size" />
+
+        </LinearLayout>
+
+        <RadioButton
+            android:id="@+id/radioSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@android:color/transparent"
+            android:clickable="false" />
+
+    </LinearLayout>
+
+</com.skywire.skycoin.vpn.controls.BoxRowLayout>

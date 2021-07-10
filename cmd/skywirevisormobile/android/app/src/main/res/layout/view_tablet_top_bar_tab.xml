@@ -1,0 +1,36 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainContainer"
+    android:layout_width="wrap_content"
+    android:layout_height="40dp"
+    android:background="@drawable/tablet_tab_border">
+
+    <LinearLayout
+        android:id="@+id/internalContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <TextView
+            android:id="@+id/textIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:alpha="0.75"
+            android:fontFamily="@font/material_font"
+            android:text="\ue8ac"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/textLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:text="Start"
+            android:textSize="16dp" />
+
+    </LinearLayout>
+
+</FrameLayout>

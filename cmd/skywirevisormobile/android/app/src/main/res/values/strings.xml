@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="general_app_name">SkywireVPN</string>
+    <string name="general_notification_channel_description">SkywireVPN status notifications.</string>
+    <string name="general_alert_notification_name">SkywireVPN Alerts</string>
+    <string name="general_alert_notification_channel_description">SkywireVPN important alert notifications.</string>
+    <string name="general_service_description">SkywireVPN networking service.</string>
+
+    <string name="general_seconds_abbreviation">s.</string>
+    <string name="general_milliseconds_abbreviation">ms.</string>
+    <string name="general_options">Options</string>
+
+    <string name="general_cancel">Cancel</string>
+    <string name="general_close">Close</string>
+    <string name="general_yes">Yes</string>
+    <string name="general_no">No</string>
+    <string name="general_unknown">Unknown</string>
+
+    <string name="general_copied">Copied to clipboard.</string>
+
+    <string name="rating_gold">Gold</string>
+    <string name="rating_silver">Silver</string>
+    <string name="rating_bronze">Bronze</string>
+
+    <string name="general_autostart_failed_error">Unable to start the VPN protection.</string>
+    <string name="general_no_permissions_error">SkywireVPN does not have the necessary permissions for activating the VPN service. Please use the app to start the VPN protection.</string>
+    <string name="general_connection_error">There has been an error with the SkywireVPN service. The VPN protection is disabled.</string>
+    <string name="general_starting_blocked_server_error">Unable to connect to the selected server because it has been added to the blocked servers list.</string>
+    <string name="general_server_running_error">Please stop the VPN before using this option.</string>
+
+    <string name="general_service_running_notification">The VPN service continues running. See the notification for more information.</string>
+
+    <string name="skywiremob_error_no_server">The VPN protection cannot be started because no server has been selected.</string>
+    <string name="skywiremob_error_server_blocked">The VPN protection cannot be started because the selected server is in the blocked list.</string>
+    <string name="skywiremob_error_invalid_pk">Invalid public key. Are you connecting to a valid VPN server?</string>
+    <string name="skywiremob_error_invalid_visor_config">Unexpected error. The local visor configuration is not valid.</string>
+    <string name="skywiremob_error_invalid_addr_resolver_url">It was not possible to access the address resolver. This may happen if there is no network connectivity or if there are temporal problems accessing any of the service components.</string>
+    <string name="skywiremob_error_stcp_init_failed">Error initializing the STCP connection. This may happen if there is no network connectivity or if there are temporal problems accessing any of the service components.</string>
+    <string name="skywiremob_error_stcpr_init_failed">Error initializing the STCPR connection. This may happen if there is no network connectivity or if there are temporal problems accessing any of the service components.</string>
+    <string name="skywiremob_error_sudph_init_failed">Error initializing the SUDPH connection. This may happen if there is no network connectivity or if there are temporal problems accessing any of the service components.</string>
+    <string name="skywiremob_error_dmsg_listen_failed">The DMSG connection failed. This may happen if there is no network connectivity or if there are temporal problems accessing any of the service components.</string>
+    <string name="skywiremob_error_tp_disc_unavailable">It was not possible to access the transport discovery service. This may happen if there is no network connectivity or if there are temporal problems accessing any of the service components.</string>
+    <string name="skywiremob_error_failed_to_start_router">It was not possible to start the router. This may happen if there is no network connectivity or if there are temporal problems accessing any of the service components.</string>
+    <string name="skywiremob_error_failed_to_setup_hv_gateway">Failed to start the RPC server for the hypervisor. This may happen if there is no network connectivity or if there are temporal problems accessing any of the service components.</string>
+    <string name="skywiremob_error_unknown">There was an unexpected error.</string>
+
+    <string name="skywiremob_error_visor_not_running">The local Skywire visor is not running. This error should be automatically solved by restarting the VPN.</string>
+    <string name="skywiremob_error_invalid_remote_pk">The remote public key is not valid. Are you are connecting to a valid VPN server?</string>
+    <string name="skywiremob_error_failed_to_save_transport">It was not possible to create a transport to access the VPN server. Do you have internet connection and are connecting to a valid VPN server?</string>
+    <string name="skywiremob_error_vpn_server_unavailable">Unable to connect with the VPN server. It may be temporally unavailable or there may be no network connectivity to access it.</string>
+    <string name="skywiremob_error_vpn_client_not_running">The local VPN client is not running. This error should be automatically solved by restarting the VPN.</string>
+    <string name="skywiremob_error_wrong_password">The server has reported that the password is invalid.</string>
+    <string name="skywiremob_error_handshake_failed">The handshake procedure with the VPN server failed. This may happen if the server is not compatible with the current version of the app or if the server refused the connection.</string>
+    <string name="skywiremob_error_invalid_addr">There was an error connecting the app with the local visor. This error should be automatically solved by restarting the VPN.</string>
+    <string name="skywiremob_error_already_listening_udp">Already listening UDP. This error should be automatically solved by restarting the VPN.</string>
+    <string name="skywiremob_error_udp_listen_failed">UPD failed. This error should be automatically solved by restarting the VPN.</string>
+
+    <string name="vpn_service_state_preparing">Preparing</string>
+    <string name="vpn_service_state_restoring">Restoring</string>
+    <string name="vpn_service_state_finishing">Finishing</string>
+
+    <string name="vpn_state_disconnected">Disconnected</string>
+    <string name="vpn_state_connecting">Connecting</string>
+    <string name="vpn_state_connected">Connected</string>
+    <string name="vpn_state_restarting">Restoring</string>
+    <string name="vpn_state_disconnecting">Disconnecting</string>
+    <string name="vpn_state_error">Error</string>
+
+    <string name="vpn_state_details_off">The SkywireVPN protection is disconnected.</string>
+    <string name="vpn_state_details_initializing">Making initial preparations.</string>
+    <string name="vpn_state_details_waiting_previous_instance_stop">Waiting for the visor to be ready.</string>
+    <string name="vpn_state_details_checking_connectivity">Checking network connectivity.</string>
+    <string name="vpn_state_details_waiting_connectivity">Waiting for network connectivity.</string>
+    <string name="vpn_state_details_starting_visor">Starting the SkywireVPN visor.</string>
+    <string name="vpn_state_details_starting_vpn_app">Starting the SkywireVPN network connector.</string>
+    <string name="vpn_state_details_additional_visor_initializations">Finishing the SkywireVPN visor initialization.</string>
+    <string name="vpn_state_details_connecting">Establishing remote connection.</string>
+    <string name="vpn_state_details_connected">VPN protection active.</string>
+    <string name="vpn_state_details_restoring">Restarting the VPN connection.</string>
+    <string name="vpn_state_details_restoring_service">Restarting the VPN service.</string>
+    <string name="vpn_state_details_disconnecting">Closing the VPN connection.</string>
+    <string name="vpn_state_details_disconnected">The VPN connection has been closed.</string>
+    <string name="vpn_state_details_error">There has been an error with the SkywireVPN service.</string>
+    <string name="vpn_state_details_blocking_error">There has been an error with the SkywireVPN service. The network will be blocked until stopping the service.</string>
+
+    <string name="vpn_coordinator_invalid_credentials_error">Invalid public key: </string>
+
+    <string name="vpn_service_network_unavailable_warning">The network will be unavailable while the VPN is starting.</string>
+    <string name="vpn_service_network_protection_error">It was not possible to protect the network.</string>
+    <string name="vpn_timeout_error">Unable to connect to the VPN server.</string>
+    <string name="vpn_connection_finished_error">The VPN connection has been closed unexpectedly.</string>
+    <string name="vpn_already_running_warning">The VPN is already running.</string>
+    <string name="vpn_no_apps_to_protect_warning">You have not selected specific applications to protect. All applications will be protected.</string>
+    <string name="vpn_no_apps_to_ignore_warning">You have not selected specific applications to ignore. All applications will be protected.</string>
+    <string name="vpn_service_configuring_app_rules_error">It was not possible to configure the rules for the VPN app.</string>
+
+    <string name="tmp_main_page_start">Start</string>
+    <string name="tmp_main_page_stop">Stop</string>
+    <string name="tmp_main_page_select">Select server</string>
+    <string name="tmp_main_page_select_apps">Select apps</string>
+    <string name="tmp_main_page_settings">Settings</string>
+    <string name="tmp_main_page_stopping">Stopping the service...</string>
+    <string name="tmp_main_page_can_not_stop">As the VPN connection was started using the system options, it is not possible to stop it using this page.</string>
+    <string name="tmp_main_page_last_error">The VPN service failed with the following error:</string>
+
+    <string name="tmp_status_page_title">Status</string>
+    <string name="tmp_status_page_last_error">Last error:</string>
+
+    <string name="tmp_status_disconnected_title">START VPN</string>
+    <string name="tmp_status_disconnected_no_server">No server selected!</string>
+
+    <string name="tmp_status_connected_title">Your connection is currently:</string>
+    <string name="tmp_status_connected_current_ip_title">Current IP:</string>
+    <string name="tmp_status_connected_current_country_title">Current Country:</string>
+    <string name="tmp_status_connected_waiting">Waiting for VPN...</string>
+    <string name="tmp_status_connected_ip_option_disabled">Option disabled</string>
+    <string name="tmp_status_connected_ip_refresh_time_warning">Please wait %1$s second(s) before refreshing the data.</string>
+    <string name="tmp_status_connected_total_data">%1$s total</string>
+    <string name="tmp_status_connected_server_title">Server:</string>
+    <string name="tmp_status_connected_remote_pk">Remote visor public key:</string>
+    <string name="tmp_status_connected_local_pk">Local visor public key:</string>
+    <string name="tmp_status_connected_disconnect">Disconnect</string>
+    <string name="tmp_status_connected_disconnect_confirmation">Are you sure you want to stop the VPN protection?</string>
+    <string name="tmp_status_connected_started_by_the_system">As the VPN connection was started using the system options, it cannot be stopped using this screen. For stopping the VPN, please use the same system options used for stating it.</string>
+    <string name="tmp_status_connected_app_protection">App protection:</string>
+    <string name="tmp_status_connected_protecting_selected_apps">Protecting only selected apps</string>
+    <string name="tmp_status_connected_ignoring_selected_apps">Ignoring selected apps</string>
+
+    <string name="tmp_select_server_title">Servers</string>
+    <string name="tmp_select_server_empty_discovery">Currently there are no VPN servers to show. Please try again later.</string>
+    <string name="tmp_select_server_empty_history">There is no history to show.</string>
+    <string name="tmp_select_server_empty_favorites">There are no favorite servers to show.</string>
+    <string name="tmp_select_server_empty_blocked">There are no blocked servers to show.</string>
+    <string name="tmp_select_server_empty_with_filter">No VPN server matches the selected filtering criteria.</string>
+    <string name="tmp_select_server_sorted_by_prefix">Sorted by</string>
+    <string name="tmp_select_server_press_to_remove_conditions">(Press to remove)</string>
+    <string name="tmp_select_server_remove_filters_button">Remove filters</string>
+    <string name="tmp_select_server_remove_custom_sorting_button">Remove custom sorting</string>
+    <string name="tmp_select_server_remove_both_button">Remove both</string>
+    <string name="tmp_select_server_sort_title">Sort by</string>
+    <string name="tmp_select_server_automatic_label">Automatic</string>
+    <string name="tmp_select_server_date_label">Last usage date</string>
+    <string name="tmp_select_server_date_small_label">Date</string>
+    <string name="tmp_select_server_country_label">Country</string>
+    <string name="tmp_select_server_name_label">Name</string>
+    <string name="tmp_select_server_location_label">Location</string>
+    <string name="tmp_select_server_public_key_label">Public key</string>
+    <string name="tmp_select_server_public_key_small_label">PK</string>
+    <string name="tmp_select_server_congestion_label">Congestion</string>
+    <string name="tmp_select_server_congestion_rating_label">Congestion rating</string>
+    <string name="tmp_select_server_latency_label">Latency</string>
+    <string name="tmp_select_server_latency_rating_label">Latency rating</string>
+    <string name="tmp_select_server_hops_label">Hops</string>
+    <string name="tmp_select_server_note_label">Note</string>
+    <string name="tmp_select_server_reversed_suffix">(reversed)</string>
+    <string name="tmp_select_server_public">Public</string>
+    <string name="tmp_select_server_history">History</string>
+    <string name="tmp_select_server_favorites">Favorites</string>
+    <string name="tmp_select_server_blocked">Blocked</string>
+    <string name="tmp_select_server_unnamed">Unnamed</string>
+    <string name="tmp_select_server_unknown_location">Unknown</string>
+    <string name="tmp_select_server_running_error">Please stop the VPN before changing the server.</string>
+
+    <string name="filter_server_title">Filter List</string>
+    <string name="filter_server_any_country_option">Any</string>
+    <string name="filter_server_country_label">The country must be</string>
+    <string name="filter_server_name_label">The name must contain</string>
+    <string name="filter_server_location_label">The location must contain</string>
+    <string name="filter_server_public_key_label">The public key must contain</string>
+    <string name="filter_server_note_label">The note must contain</string>
+    <string name="filter_server_filter_button">Filter</string>
+
+    <string name="add_server_title">Enter Manually</string>
+    <string name="add_server_pk_label">Server public key</string>
+    <string name="add_server_password_label">Server password (if any)</string>
+    <string name="add_server_name_label">Server name (optional)</string>
+    <string name="add_server_note_label">Personal note (optional)</string>
+    <string name="add_server_pk_length_error">The public key must be 66 characters long.</string>
+    <string name="add_server_pk_invalid_error">The public key is not valid.</string>
+    <string name="add_server_use_server_button">Use server</string>
+
+    <string name="tmp_server_options_view_info">View info</string>
+    <string name="tmp_server_options_copy_pk">Copy public key</string>
+    <string name="tmp_server_options_name">Custom name</string>
+    <string name="tmp_server_options_note">Custom note</string>
+    <string name="tmp_server_options_remove_password">Remove password</string>
+    <string name="tmp_server_options_remove_password_confirmation">Are you sure you want remove the password used for connecting to this server?</string>
+    <string name="tmp_server_options_remove_password_done">Password removed.</string>
+    <string name="tmp_server_options_change_password">Change password</string>
+    <string name="tmp_server_options_add_password">Set password</string>
+    <string name="tmp_server_options_make_favorite">Make favorite</string>
+    <string name="tmp_server_options_make_favorite_from_blocked_confirmation">Are you sure you want to mark this server as favorite? It will be removed from the blocked list.</string>
+    <string name="tmp_server_options_make_favorite_done">Added to the favorites list.</string>
+    <string name="tmp_server_options_remove_from_favorites">Remove from favorites</string>
+    <string name="tmp_server_options_remove_from_favorites_done">Removed from the favorites list.</string>
+    <string name="tmp_server_options_block">Block server</string>
+    <string name="tmp_server_options_block_error">ERROR: you cannot block this server because it is currently selected.</string>
+    <string name="tmp_server_options_block_favorite_confirmation">Are you sure you want to block this server? It will be removed from the favorites list.</string>
+    <string name="tmp_server_options_block_done">Added to the blocked list.</string>
+    <string name="tmp_server_options_unblock">Unblock server</string>
+    <string name="tmp_server_options_unblock_done">Removed from the blocked list.</string>
+    <string name="tmp_server_options_remove_from_history">Remove from history</string>
+    <string name="tmp_server_options_remove_from_history_confirmation">Are you sure you want to remove this server from the history?</string>
+    <string name="tmp_server_options_remove_from_history_done">Removed from history.</string>
+
+    <string name="server_info_title">Server Info</string>
+    <string name="server_info_note_title">Server Note</string>
+    <string name="server_info_without_value">Without value</string>
+    <string name="server_info_basic_info_title">Basic Information</string>
+    <string name="server_info_name">Server name:</string>
+    <string name="server_info_custom_name">Custom server name:</string>
+    <string name="server_info_pk">Skywire visor public key:</string>
+    <string name="server_info_note">Note:</string>
+    <string name="server_info_original_note">Original note:</string>
+    <string name="server_info_personal_note">Personal note:</string>
+    <string name="server_info_last_time_used">Last time used:</string>
+    <string name="server_info_location_title">Location</string>
+    <string name="server_info_country">Country:</string>
+    <string name="server_info_country_code">Country code:</string>
+    <string name="server_info_location">Location:</string>
+    <string name="server_info_connectivity_title">Connectivity</string>
+    <string name="server_info_congestion">Current congestion:</string>
+    <string name="server_info_congestion_rating">Regular congestion rating:</string>
+    <string name="server_info_latency">Current latency:</string>
+    <string name="server_info_latency_rating">Regular latency rating:</string>
+    <string name="server_info_hops">Hops needed for connecting with the server:</string>
+    <string name="server_info_special_conditions_title">Special Conditions</string>
+    <string name="server_info_is_current">Selected as the current server:</string>
+    <string name="server_info_is_favorite">Is favorite:</string>
+    <string name="server_info_is_blocked">Is blocked:</string>
+    <string name="server_info_is_in_history">Is in history:</string>
+    <string name="server_info_entered_manually">Entered manually:</string>
+    <string name="server_info_has_password">Has password:</string>
+
+    <string name="server_password_title">Enter Password</string>
+    <string name="server_password_label">Server password</string>
+    <string name="server_password_apply_button">Apply</string>
+    <string name="server_password_cancel_button">Cancel</string>
+    <string name="server_password_changes_made_confirmation">The change has been made.</string>
+
+    <string name="tmp_edit_value_name_title">Custom Name</string>
+    <string name="tmp_edit_value_note_title">Custom Note</string>
+    <string name="tmp_edit_value_name_label">Custom name</string>
+    <string name="tmp_edit_value_note_label">Custom note</string>
+    <string name="tmp_edit_value_apply_button">Apply</string>
+    <string name="tmp_edit_value_cancel_button">Cancel</string>
+    <string name="tmp_edit_value_changes_made_confirmation">The change has been made.</string>
+
+    <string name="tmp_select_apps_title">Select apps</string>
+    <string name="tmp_select_apps_protect_all_button">Protect all apps</string>
+    <string name="tmp_select_apps_protect_all_button_desc">All applications on the device will be protected. Selections made on the list will be ignored.</string>
+    <string name="tmp_select_apps_protect_selected_button">Protect selected apps only</string>
+    <string name="tmp_select_apps_protect_selected_button_desc">Only the applications that were selected will be protected. All other applications will use the regular network connection.</string>
+    <string name="tmp_select_apps_unprotect_selected_button">Do not protect the selected apps</string>
+    <string name="tmp_select_apps_unprotect_selected_button_desc">Applications that were not selected will be protected. The selected applications will use the regular network connection.</string>
+    <string name="tmp_select_apps_mode_title">Protection mode</string>
+    <string name="tmp_select_apps_apps_title">Apps</string>
+    <string name="tmp_select_apps_installed_apps_title">Installed apps</string>
+    <string name="tmp_select_apps_uninstalled_apps_title">Uninstalled apps</string>
+
+    <string name="tmp_options_title">Settings</string>
+    <string name="tmp_options_apps_title">Protect specific apps</string>
+    <string name="tmp_options_apps_description">Currently the VPN protection covers all your apps. Use this option if you want to protect only some applications or if you want to ignore them.</string>
+    <string name="tmp_options_apps_include_description">Only %1$s app(s) you have selected will be protected. Press here if you want to change the configuiration.</string>
+    <string name="tmp_options_apps_exclude_description">%1$s app(s) you have selected will NOT be protected. Press here if you want to change the configuiration.</string>
+    <string name="tmp_options_show_ip_title">Show IP info</string>
+    <string name="tmp_options_show_ip_description">When active, the application will show the public IP address of the device. For this, external services will be used.</string>
+    <string name="tmp_options_kill_switch_title">Kill switch</string>
+    <string name="tmp_options_kill_switch_description">If active, the app will try to block all network connections if the VPN protection is stopped unexpectedly, to ensure privacy. Note: the operating system may prevent this option from working.</string>
+    <string name="tmp_options_reset_after_errors_title">Reset after errors.</string>
+    <string name="tmp_options_reset_after_errors_description">If active, the service will be restarted automatically in case of error. You may not have internet connection while the service is being restarted.</string>
+    <string name="tmp_options_protect_before_connecting_title">Protect before finishing connecting.</string>
+    <string name="tmp_options_protect_before_connecting_description">If active, no data will be sent unprotected after you press the connection button, but the internet connection will be unavailable for a moment.</string>
+    <string name="tmp_options_start_on_boot_title">Start on boot.</string>
+    <string name="tmp_options_start_on_boot_description">The VPN protection will be automatically started shortly after turning on the device.</string>
+    <string name="tmp_options_start_on_boot_without_server_error">Please select a server before using this option.</string>
+    <string name="tmp_options_data_units_title">Data units</string>
+    <string name="tmp_options_data_units_only_bits">Bits for all stats</string>
+    <string name="tmp_options_data_units_only_bytes">Bytes for all stats</string>
+    <string name="tmp_options_data_units_bits_speed_and_bytes_volume">Bits for speed and bytes for volume (default)</string>
+    <string name="tmp_options_dns_title">Custom DNS server</string>
+    <string name="tmp_options_dns_default">None (use the default configuration).</string>
+    <string name="tmp_options_dns_description">%1$s (the OS and some apps could ignore this configuration in some circumstances)</string>
+
+    <string name="tmp_dns_title">Custom DNS Server</string>
+    <string name="tmp_dns_ip_label">IP (empty to remove)</string>
+    <string name="tmp_dns_apply_button">Apply</string>
+    <string name="tmp_dns_cancel_button">Cancel</string>
+    <string name="tmp_dns_validation_error">Please enter a valid IPv4 address.</string>
+    <string name="tmp_dns_changes_made_confirmation">The change has been made.</string>
+
+    <string name="tmp_confirmation_title">Confirmation</string>
+    <string name="tmp_confirmation_yes">Yes</string>
+    <string name="tmp_confirmation_no">No</string>
+</resources>

@@ -1,0 +1,14 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/top_bar_internal_height"
+    android:layout_height="@dimen/top_bar_internal_height"
+    android:background="@drawable/box_ripple">
+
+    <TextView
+        android:id="@+id/textIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/material_font"
+        android:text="\ue5d2"
+        android:textSize="24dp" />
+</FrameLayout>

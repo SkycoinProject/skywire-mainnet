@@ -1,0 +1,184 @@
+<com.skywire.skycoin.vpn.controls.BoxRowLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:clickable="false"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:longClickable="false"
+    android:screenReaderFocusable="false"
+    app:add_extra_padding_for_tablets="true"
+    app:box_row_type="middle"
+    app:ignore_margins="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imageFlag"
+                android:layout_width="24dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:background="@drawable/flag_rounded_box"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/us" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textDate"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="2021/01/01, 12:00 PM"
+            android:textSize="@dimen/small_text_size" />
+
+        <com.skywire.skycoin.vpn.controls.ServerName
+            android:id="@+id/serverName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="3"
+            app:default_name="@string/tmp_select_server_unnamed"
+            app:text_size="@dimen/small_text_size" />
+
+        <TextView
+            android:id="@+id/textLocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="3"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/tmp_select_server_location_label"
+            android:textSize="@dimen/small_text_size" />
+
+        <TextView
+            android:id="@+id/textPk"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="2"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/tmp_select_server_public_key_small_label"
+            android:textSize="@dimen/small_text_size" />
+
+        <LinearLayout
+            android:id="@+id/statsArea"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textCongestion"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="20%"
+                android:textSize="@dimen/small_text_size" />
+
+            <FrameLayout
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp">
+
+                <ImageView
+                    android:id="@+id/imageCongestionRating"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/gold_rating" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/textLatency"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="20ms"
+                android:textSize="@dimen/small_text_size" />
+
+            <FrameLayout
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp">
+
+                <ImageView
+                    android:id="@+id/imageLatencyRating"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/gold_rating" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/textHops"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="5"
+                android:textSize="@dimen/small_text_size" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp">
+
+            <com.skywire.skycoin.vpn.controls.SettingsButton
+                android:id="@+id/buttonNote"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="left"
+                app:use_note_icon="true" />
+
+            <com.skywire.skycoin.vpn.controls.SettingsButton
+                android:id="@+id/buttonSettings"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="right"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</com.skywire.skycoin.vpn.controls.BoxRowLayout>

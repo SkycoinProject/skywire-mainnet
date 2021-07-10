@@ -1,0 +1,57 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.index.IndexActivity">
+
+    <ImageView
+        android:id="@+id/imageBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/top_bar_with_tabs_height"
+        android:alpha="0.1"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/map" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/top_bar_with_tabs_height" />
+
+    <com.skywire.skycoin.vpn.controls.TopBar
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/top_bar_height">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/top_tab_bar_height"
+            android:background="@color/bar_background"
+            app:tabBackground="@color/bar_background"
+            app:tabRippleColor="@color/box_ripple"
+            app:tabIndicatorColor="@color/accent"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <com.skywire.skycoin.vpn.controls.TabletTopBar
+        android:id="@+id/tabletTopBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/imageTopBarShadow"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_bar_shadow_height"
+        android:layout_marginTop="@dimen/top_bar_with_tabs_height"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/top_bar_shadow" />
+
+</FrameLayout>

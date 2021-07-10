@@ -1,0 +1,508 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp">
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:id="@+id/leftContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/time_rounded_box"
+                        android:orientation="horizontal"
+                        android:paddingLeft="14dp"
+                        android:paddingTop="7dp"
+                        android:paddingRight="14dp"
+                        android:paddingBottom="7dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginRight="5dp"
+                            android:fontFamily="@font/material_font"
+                            android:gravity="center_vertical"
+                            android:text="\ue01b"
+                            android:textColor="@color/subtle_text"
+                            android:textSize="@dimen/small_text_size" />
+
+                        <TextView
+                            android:id="@+id/textTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="00:00:00"
+                            android:textColor="@color/subtle_text"
+                            android:textSize="@dimen/small_text_size"
+                            android:translationY="-1dp" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/status_page_horizontal_margin"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="@dimen/status_page_horizontal_margin"
+                        android:gravity="center_horizontal"
+                        android:text="@string/tmp_status_connected_title"
+                        android:textColor="@color/subtle_text"
+                        android:textSize="@dimen/small_text_size" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="@dimen/status_page_horizontal_margin"
+                        android:layout_marginRight="@dimen/status_page_horizontal_margin"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/textState"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="2dp"
+                            android:layout_marginRight="2dp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="Connected"
+                            android:textAllCaps="true"
+                            android:textSize="24sp" />
+
+                        <ImageView
+                            android:id="@+id/imageStateLine"
+                            android:layout_width="match_parent"
+                            android:layout_height="0.5dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:alpha="0.7"
+                            android:background="@color/white" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textStateDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/status_page_horizontal_margin"
+                        android:layout_marginRight="@dimen/status_page_horizontal_margin"
+                        android:gravity="center_horizontal"
+                        android:text="Connection stablished"
+                        android:textSize="@dimen/mini_text_size" />
+
+                    <TextView
+                        android:id="@+id/textLastError"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/status_page_horizontal_margin"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginRight="@dimen/status_page_horizontal_margin"
+                        android:gravity="center_horizontal"
+                        android:text="Last error:"
+                        android:textColor="@color/red"
+                        android:textSize="@dimen/mini_text_size" />
+
+                    <LinearLayout
+                        android:id="@+id/ipDataContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="-5dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginRight="-5dp"
+                        android:orientation="horizontal"
+                        android:paddingLeft="@dimen/status_page_horizontal_margin"
+                        android:paddingRight="@dimen/status_page_horizontal_margin">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_horizontal"
+                                android:text="@string/tmp_status_connected_current_ip_title"
+                                android:textColor="@color/subtle_text"
+                                android:textSize="@dimen/small_text_size" />
+
+                            <TextView
+                                android:id="@+id/textWaitingIp"
+                                android:layout_width="match_parent"
+                                android:layout_height="20dp"
+                                android:ellipsize="end"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:text="@string/tmp_status_connected_waiting"
+                                android:textSize="@dimen/micro_text_size" />
+
+                            <LinearLayout
+                                android:id="@+id/ipContainer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center_horizontal"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/textIp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="end"
+                                    android:gravity="center_horizontal"
+                                    android:maxLines="1"
+                                    android:text="---" />
+
+                                <ProgressBar
+                                    android:id="@+id/progressIp"
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginLeft="5dp"
+                                    android:indeterminate="true"
+                                    android:indeterminateTint="@color/normal_text"
+                                    android:indeterminateTintMode="src_in" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_horizontal"
+                                android:text="@string/tmp_status_connected_current_country_title"
+                                android:textColor="@color/subtle_text"
+                                android:textSize="@dimen/small_text_size" />
+
+                            <TextView
+                                android:id="@+id/textWaitingCountry"
+                                android:layout_width="match_parent"
+                                android:layout_height="20dp"
+                                android:ellipsize="end"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:text="@string/tmp_status_connected_waiting"
+                                android:textSize="@dimen/micro_text_size" />
+
+                            <LinearLayout
+                                android:id="@+id/countryContainer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center_horizontal"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/textCountry"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="end"
+                                    android:gravity="center_horizontal"
+                                    android:maxLines="1"
+                                    android:text="---" />
+
+                                <ProgressBar
+                                    android:id="@+id/progressCountry"
+                                    style="?android:attr/progressBarStyle"
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginLeft="5dp"
+                                    android:indeterminate="true"
+                                    android:indeterminateTint="@color/normal_text"
+                                    android:indeterminateTintMode="src_in" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginRight="5dp"
+                        android:orientation="horizontal">
+
+                        <com.skywire.skycoin.vpn.activities.start.connected.Chart
+                            android:id="@+id/uploadChart"
+                            android:layout_width="0dp"
+                            android:layout_height="150dp"
+                            android:layout_marginRight="-5dp"
+                            android:layout_weight="1">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:orientation="vertical"
+                                android:translationY="-7dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginBottom="5dp"
+                                    android:fontFamily="@font/material_font"
+                                    android:rotation="90"
+                                    android:text="\ue317"
+                                    android:textSize="20dp" />
+
+                                <TextView
+                                    android:id="@+id/textUploadSpeed"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:text="0B/s"
+                                    android:textSize="@dimen/small_text_size" />
+
+                                <TextView
+                                    android:id="@+id/textTotalUploaded"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:text="0B Total"
+                                    android:textColor="@color/subtle_text"
+                                    android:textSize="@dimen/mini_text_size" />
+
+                            </LinearLayout>
+
+                        </com.skywire.skycoin.vpn.activities.start.connected.Chart>
+
+                        <com.skywire.skycoin.vpn.activities.start.connected.Chart
+                            android:id="@+id/downloadChart"
+                            android:layout_width="0dp"
+                            android:layout_height="150dp"
+                            android:layout_marginLeft="-5dp"
+                            android:layout_weight="1">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:orientation="vertical"
+                                android:translationY="-7dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginBottom="5dp"
+                                    android:fontFamily="@font/material_font"
+                                    android:rotation="-90"
+                                    android:text="\ue317"
+                                    android:textSize="20dp" />
+
+                                <TextView
+                                    android:id="@+id/textDownloadSpeed"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:text="0B/s"
+                                    android:textSize="@dimen/small_text_size" />
+
+                                <TextView
+                                    android:id="@+id/textTotalDownloaded"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:text="0B Total"
+                                    android:textColor="@color/subtle_text"
+                                    android:textSize="@dimen/mini_text_size" />
+
+                            </LinearLayout>
+
+                        </com.skywire.skycoin.vpn.activities.start.connected.Chart>
+
+                    </LinearLayout>
+
+                    <com.skywire.skycoin.vpn.activities.start.connected.Chart
+                        android:id="@+id/latencyChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="-10dp"
+                        android:layout_marginRight="5dp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:orientation="horizontal"
+                            android:translationY="-3dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginRight="5dp"
+                                android:fontFamily="@font/material_font"
+                                android:text="\ue8d4"
+                                android:textSize="20dp" />
+
+                            <TextView
+                                android:id="@+id/textLatency"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:text="0ms."
+                                android:textSize="@dimen/small_text_size" />
+
+                        </LinearLayout>
+
+                    </com.skywire.skycoin.vpn.activities.start.connected.Chart>
+
+                    <FrameLayout
+                        android:id="@+id/appsContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:background="@color/black_background">
+
+                        <LinearLayout
+                            android:id="@+id/appsInternalContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/current_server_ripple"
+                            android:clickable="true"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:paddingLeft="@dimen/status_page_horizontal_margin"
+                            android:paddingTop="12dp"
+                            android:paddingRight="@dimen/status_page_horizontal_margin"
+                            android:paddingBottom="15dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="5dp"
+                                android:fontFamily="@font/material_font"
+                                android:text="\ue001"
+                                android:translationY="1dp" />
+
+                            <TextView
+                                android:id="@+id/textAppsProtectionMode"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tmp_status_connected_protecting_selected_apps"
+                                android:textSize="@dimen/small_text_size" />
+
+                        </LinearLayout>
+
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/black_background">
+
+                        <LinearLayout
+                            android:id="@+id/serverContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/current_server_ripple"
+                            android:clickable="true"
+                            android:orientation="vertical"
+                            android:paddingLeft="@dimen/status_page_horizontal_margin"
+                            android:paddingTop="10dp"
+                            android:paddingRight="@dimen/status_page_horizontal_margin"
+                            android:paddingBottom="15dp">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="@string/tmp_status_connected_server_title"
+                                android:textColor="@color/subtle_text"
+                                android:textSize="@dimen/mini_text_size" />
+
+                            <com.skywire.skycoin.vpn.controls.ServerName
+                                android:id="@+id/serverName"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:center_text="true"
+                                app:default_name="@string/tmp_select_server_unnamed"
+                                app:text_size="@dimen/small_text_size" />
+
+                            <TextView
+                                android:id="@+id/textServerNote"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="Note"
+                                android:textSize="@dimen/mini_text_size" />
+
+                        </LinearLayout>
+
+                    </FrameLayout>
+
+                    <com.skywire.skycoin.vpn.activities.start.connected.StopButton
+                        android:id="@+id/buttonStop"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="-5dp"/>
+
+                    <TextView
+                        android:id="@+id/textStartedByTheSystem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/status_page_horizontal_margin"
+                        android:layout_marginRight="@dimen/status_page_horizontal_margin"
+                        android:gravity="center"
+                        android:text="@string/tmp_status_connected_started_by_the_system"
+                        android:textSize="@dimen/mini_text_size" />
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/rightContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1">
+
+                <com.skywire.skycoin.vpn.activities.start.StartViewRightPanel
+                    android:id="@+id/rightPanel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>
