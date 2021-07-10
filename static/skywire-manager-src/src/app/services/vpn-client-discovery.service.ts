@@ -5,12 +5,17 @@ import { retryWhen, delay, map } from 'rxjs/operators';
 
 /**
  * Ratings some properties of a server can have.
+ *
+ * TODO: used only for columns that are currently deactivated in the server list. Must
+ * be deleted or reactivated depending on what happens to the columns.
  */
+/*
 export enum Ratings {
   Gold = 0,
   Silver = 1,
   Bronze = 2,
 }
+*/
 
 /**
  * Data of a server obtained from the discovery service.
@@ -32,26 +37,32 @@ export class VpnServer {
    * Public key.
    */
   pk: string;
+
+
+  // TODO: used only for columns that are currently deactivated in the server list. Must
+  // be deleted or reactivated depending on what happens to the columns.
   /**
    * Current congestion of the server.
    */
-  congestion: number;
+   // congestion: number;
   /**
    * Rating of the congestion the server normally has.
    */
-  congestionRating: Ratings;
+  // congestionRating: Ratings;
   /**
    * Latency of the server.
    */
-  latency: number;
+  // latency: number;
   /**
    * Rating of the latency the server normally has.
    */
-  latencyRating: Ratings;
+  // latencyRating: Ratings;
   /**
    * Hops needed for reaching the server.
    */
-  hops: number;
+  // hops: number;
+
+
   /**
    * Note the server has in the discovery service.
    */
@@ -119,13 +130,18 @@ export class VpnClientDiscoveryService {
               }
             }
 
-            // Data that must be obtained after the changes in the service.
             currentEntry.name = addressParts[0];
+            /*
+            // TODO: used only for columns that are currently deactivated in the server list. Must
+            // be deleted or reactivated depending on what happens to the columns.
             currentEntry.congestion = 20;
             currentEntry.congestionRating = Ratings.Gold;
             currentEntry.latency = 123;
             currentEntry.latencyRating = Ratings.Gold;
             currentEntry.hops = 3;
+            */
+
+            // TODO: still not added to the discovery service.
             currentEntry.note = '';
 
             response.push(currentEntry);

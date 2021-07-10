@@ -12,6 +12,20 @@ import { processServiceError } from 'src/app/utils/errors';
 import { RouteService } from 'src/app/services/route.service';
 
 /**
+ * Params for RouterConfigComponent.
+ */
+export interface RouterConfigParams {
+  /**
+   * PK of the node.
+   */
+  nodePk: string;
+  /**
+   * Current value of the min hops property in the node.
+   */
+   minHops: number;
+}
+
+/**
  * Modal window for changing the configuration related to the router. It changes the values
  * and shows a confirmation msg by itself.
  */
@@ -31,7 +45,7 @@ export class RouterConfigComponent implements OnInit, OnDestroy {
   /**
    * Opens the modal window. Please use this function instead of opening the window "by hand".
    */
-  public static openDialog(dialog: MatDialog, node: Node): MatDialogRef<RouterConfigComponent, any> {
+  public static openDialog(dialog: MatDialog, node: RouterConfigParams): MatDialogRef<RouterConfigComponent, any> {
     const config = new MatDialogConfig();
     config.data = node;
     config.autoFocus = false;
@@ -42,7 +56,7 @@ export class RouterConfigComponent implements OnInit, OnDestroy {
 
   constructor(
     private dialogRef: MatDialogRef<RouterConfigComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: Node,
+    @Inject(MAT_DIALOG_DATA) private data: RouterConfigParams,
     private formBuilder: FormBuilder,
     private snackbarService: SnackbarService,
     private routeService: RouteService,
@@ -74,7 +88,7 @@ export class RouterConfigComponent implements OnInit, OnDestroy {
     this.button.showLoading();
 
     this.operationSubscription = this.routeService.setMinHops(
-      this.data.localPk,
+      this.data.nodePk,
       Number.parseInt(this.form.get('min').value, 10)
     ).subscribe({
       next: this.onSuccess.bind(this),

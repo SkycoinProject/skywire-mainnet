@@ -832,6 +832,8 @@
       "get-ip-info": "When active, the application will use external services to obtain information about the current IP.",
       "data-units": "Data units",
       "data-units-info": "Allows to select the units that will be used to display the data transmission statistics.",
+      "minimum-hops": "Minimum hops",
+      "minimum-hops-info": "Allows to set the minimum number of hops the connections must pass through other Skywire visors before reaching the final destination.",
       "setting-on": "On",
       "setting-off": "Off",
       "working-warning": "The system is busy. Please wait for the previous operation to finish.",

@@ -145,6 +145,8 @@
               <mat-icon *ngIf="dataSorter.currentSortingColumn === pkSortData" [inline]="true">{{ dataSorter.sortingArrow }}</mat-icon>
             </div>
           </th>
+          <!--
+          // TODO: these columns are for data not yet available in the discovery service. should be reactivated or removed later.
           <th *ngIf="currentList === lists.Public" class="sortable-column short-column center click-effect" (click)="dataSorter.changeSortingOrder(congestionSortData)" [matTooltip]="'vpn.server-list.congestion-info' | translate">
             <div class="header-container">
               <mat-icon [inline]="true">person</mat-icon>
@@ -185,6 +187,7 @@
               <mat-icon *ngIf="dataSorter.currentSortingColumn === hopsSortData" [inline]="true">{{ dataSorter.sortingArrow }}</mat-icon>
             </div>
           </th>
+          -->
           <th class="sortable-column note-column center click-effect" (click)="dataSorter.changeSortingOrder(noteSortData)" [matTooltip]="'vpn.server-list.note-info' | translate">
             <div class="header-container">
               <mat-icon [inline]="true">info_outline</mat-icon>
@@ -231,9 +234,15 @@
               {{ 'vpn.server-list.unknown' | translate }}
             </ng-container>
           </td>
+          <!--
+          // TODO: this should be used, instead of the currently active version, if the extra columns are reactivated.
           <td class="pk-column" [ngClass]="{'public-pk-column': currentList === lists.Public, 'history-pk-column': currentList === lists.History}">
+          -->
+          <td class="pk-column history-pk-column">
             <app-copy-to-clipboard-text (click)="$event.stopPropagation()" class="d-inline-block w-100" [shortSimple]="true" [text]="server.pk"></app-copy-to-clipboard-text>
           </td>
+          <!--
+          // TODO: these columns are for data not yet available in the discovery service. should be reactivated or removed later.
           <td *ngIf="currentList === lists.Public" [class]="getCongestionTextColorClass(server.congestion) + ' center short-column'">
             {{ server.congestion }}%
           </td>
@@ -257,6 +266,7 @@
           <td *ngIf="currentList === lists.Public" [class]="getHopsTextColorClass(server.hops) + ' center mini-column'">
             {{ server.hops }}
           </td>
+          -->
           <td class="center note-column">
             <mat-icon
               *ngIf="server.note || server.personalNote"
@@ -285,7 +295,7 @@
       *ngIf="numberOfPages > 1"
       [currentPage]="currentPage"
       [numberOfPages]="numberOfPages"
-      [linkParts]="['/vpn']"
+      [linkParts]="['/vpn', currentLocalPk, 'servers', currentList]"
       [queryParams]="dataFilterer.currentUrlQueryParams">
     </app-paginator>
 

@@ -83,6 +83,18 @@
             {{ getUnitsOptionText(dataUnitsOption) | translate }}
           </td>
         </tr>
+        <!-- Hops. -->
+        <tr class="selectable" (click)="changeHops()">
+          <td class="data-column">
+            <div>
+              {{ 'vpn.settings-page.minimum-hops' | translate }}
+              <mat-icon [inline]="true" class="help-icon" [matTooltip]="'vpn.settings-page.minimum-hops-info' | translate">help</mat-icon>
+            </div>
+          </td>
+          <td class="data-column">
+            {{ backendData.vpnClientAppData.minHops }}
+          </td>
+        </tr>
       </table>
     </div></div>
   </div></div>

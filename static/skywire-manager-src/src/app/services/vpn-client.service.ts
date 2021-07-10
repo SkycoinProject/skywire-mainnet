@@ -73,6 +73,10 @@ export class VpnClientAppData {
    * Data transmission stats, if the app is running.
    */
   connectionData: VpnClientConnectionsData;
+  /**
+   * Min hops the reoutes must have.
+   */
+  minHops: number;
 }
 
 /**
@@ -676,12 +680,12 @@ export class VpnClientService {
     let vpnClientData: VpnClientAppData;
 
     // Get the basic info about the local visor.
-    return this.apiService.get(`visors/${this.nodeKey}`).pipe(mergeMap(nodeInfo => {
+    return this.apiService.get(`visors/${this.nodeKey}/summary`).pipe(mergeMap(nodeInfo => {
       let appData: any;
 
       // Get the data of the VPN client app.
-      if (nodeInfo && nodeInfo.apps && (nodeInfo.apps as any[]).length > 0) {
-        (nodeInfo.apps as any[]).forEach(value => {
+      if (nodeInfo && nodeInfo.overview && nodeInfo.overview.apps && (nodeInfo.overview.apps as any[]).length > 0) {
+        (nodeInfo.overview.apps as any[]).forEach(value => {
           if (value.name === this.vpnClientAppName) {
             appData = value;
           }
@@ -712,12 +716,15 @@ export class VpnClientService {
               vpnClientData.serverPk = appData.args[i + 1];
             }
 
-            if (appData.args[i] === '-killswitch' && i + 1 < appData.args.length) {
-              vpnClientData.killswitch = (appData.args[i + 1] as string).toLowerCase() === 'true';
+            if (appData.args[i].toLowerCase().includes('-killswitch')) {
+              vpnClientData.killswitch = (appData.args[i] as string).toLowerCase().includes('true');
             }
           }
         }
       }
+
+      // Get the min hops value.
+      vpnClientData.minHops = nodeInfo.min_hops ? nodeInfo.min_hops : 0;
 
       // Get the data transmission data, is the app is running.
       if (vpnClientData && vpnClientData.running) {

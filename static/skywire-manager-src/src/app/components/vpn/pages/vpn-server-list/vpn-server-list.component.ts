@@ -8,7 +8,7 @@ import { SortingModes, SortingColumn, DataSorter } from 'src/app/utils/lists/dat
 import { DataFilterer } from 'src/app/utils/lists/data-filterer';
 import { FilterProperties, FilterFieldTypes, PrintableLabel } from 'src/app/utils/filters';
 import { countriesList } from 'src/app/utils/countries-list';
-import { VpnClientDiscoveryService, VpnServer, Ratings } from 'src/app/services/vpn-client-discovery.service';
+import { VpnClientDiscoveryService, VpnServer } from 'src/app/services/vpn-client-discovery.service';
 import { VpnHelpers } from '../../vpn-helpers';
 import { VpnClientService } from 'src/app/services/vpn-client.service';
 import { SnackbarService } from 'src/app/services/snackbar.service';
@@ -49,6 +49,10 @@ interface VpnServerForList {
    */
   countryCode: string;
   /**
+   * Name of the country.
+   */
+  countryName: string;
+  /**
    * Sever name, obtained from the discovery service.
    */
   name: string;
@@ -64,26 +68,32 @@ interface VpnServerForList {
    * Public key.
    */
   pk: string;
+
+
+  // TODO: for currently commented columns, must be deleted or reactivated depending on what
+  // happens to the columns.
   /**
    * Current congestion of the server, obtained from the discovery service.
    */
-  congestion?: number;
+  // congestion?: number;
   /**
    * Rating of the congestion the server normally has, obtained from the discovery service.
    */
-  congestionRating?: Ratings;
+  // congestionRating?: Ratings;
   /**
    * Latency of the server, obtained from the discovery service.
    */
-  latency?: number;
+  // latency?: number;
   /**
    * Rating of the latency the server normally has, obtained from the discovery service.
    */
-  latencyRating?: Ratings;
+  // latencyRating?: Ratings;
   /**
    * Hops needed for reaching the server.
    */
-  hops?: number;
+  // hops?: number;
+
+
   /**
    * Note with information about the server, obtained from the discovery service.
    */
@@ -142,10 +152,14 @@ export class VpnServerListComponent implements OnDestroy {
 
   // Vars with the data of the columns used for sorting the data.
   dateSortData = new SortingColumn(['lastUsed'], 'vpn.server-list.date-small-table-label', SortingModes.NumberReversed);
-  countrySortData = new SortingColumn(['countryCode'], 'vpn.server-list.country-small-table-label', SortingModes.Text);
+  countrySortData = new SortingColumn(['countryName'], 'vpn.server-list.country-small-table-label', SortingModes.Text);
   nameSortData = new SortingColumn(['name'], 'vpn.server-list.name-small-table-label', SortingModes.Text);
   locationSortData = new SortingColumn(['location'], 'vpn.server-list.location-small-table-label', SortingModes.Text);
   pkSortData = new SortingColumn(['pk'], 'vpn.server-list.public-key-small-table-label', SortingModes.Text);
+  noteSortData = new SortingColumn(['note'], 'vpn.server-list.note-small-table-label', SortingModes.Text);
+  /*
+  // TODO: for currently commented columns, must be deleted or reactivated depending on what
+  // happens to the columns.
   congestionSortData = new SortingColumn(['congestion'], 'vpn.server-list.congestion-small-table-label', SortingModes.Number);
   congestionRatingSortData = new SortingColumn(
     ['congestionRating'],
@@ -155,7 +169,7 @@ export class VpnServerListComponent implements OnDestroy {
   latencySortData = new SortingColumn(['latency'], 'vpn.server-list.latency-small-table-label', SortingModes.Number);
   latencyRatingSortData = new SortingColumn(['latencyRating'], 'vpn.server-list.latency-rating-small-table-label', SortingModes.Number);
   hopsSortData = new SortingColumn(['hops'], 'vpn.server-list.hops-small-table-label', SortingModes.Number);
-  noteSortData = new SortingColumn(['note'], 'vpn.server-list.note-small-table-label', SortingModes.Text);
+  */
 
   private dataSortedSubscription: Subscription;
   private dataFiltererSubscription: Subscription;
@@ -202,7 +216,6 @@ export class VpnServerListComponent implements OnDestroy {
   private dataSubscription: Subscription;
   private currentServerSubscription: Subscription;
   private backendDataSubscription: Subscription;
-  private checkVpnSubscription: Subscription;
 
   constructor(
     private dialog: MatDialog,
@@ -260,12 +273,7 @@ export class VpnServerListComponent implements OnDestroy {
       // Load the data, if needed.
       if (!this.initialLoadStarted) {
         this.initialLoadStarted = true;
-
-        if (this.currentList === Lists.Public) {
-          this.loadTestData();
-        } else {
-          this.loadData();
-        }
+        this.loadData();
       }
     });
 
@@ -293,8 +301,6 @@ export class VpnServerListComponent implements OnDestroy {
     if (this.dataSubscription) {
       this.dataSubscription.unsubscribe();
     }
-
-    this.closeCheckVpnSubscription();
 
     if (this.dataFilterer) {
       this.dataFilterer.dispose();
@@ -433,17 +439,23 @@ export class VpnServerListComponent implements OnDestroy {
         this.allServers = response.map(server => {
           return {
             countryCode: server.countryCode,
+            countryName: this.getCountryName(server.countryCode),
             name: server.name,
             customName: null,
             location: server.location,
             pk: server.pk,
+            note: server.note,
+            personalNote: null,
+
+            /*
+            // TODO: for currently commented columns, must be deleted or reactivated depending on
+            // what happens to the columns.
             congestion: server.congestion,
             congestionRating: server.congestionRating,
             latency: server.latency,
             latencyRating: server.latencyRating,
             hops: server.hops,
-            note: server.note,
-            personalNote: null,
+            */
 
             originalDiscoveryData: server,
           };
@@ -473,6 +485,7 @@ export class VpnServerListComponent implements OnDestroy {
         response.forEach(server => {
           processedList.push({
             countryCode: server.countryCode,
+            countryName: this.getCountryName(server.countryCode),
             name: server.name,
             customName: null,
             location: server.location,
@@ -493,75 +506,6 @@ export class VpnServerListComponent implements OnDestroy {
         this.processAllServers();
       });
     }
-  }
-
-  /**
-   * TODO: should be removed in the final version.
-   */
-  private loadTestData() {
-    setTimeout(() => {
-      this.allServers = [];
-
-      const server1: VpnServer = {
-        countryCode: 'au',
-        name: 'Server name',
-        location: 'Melbourne - Australia',
-        pk: '024ec47420176680816e0406250e7156465e4531f5b26057c9f6297bb0303558c7',
-        congestion: 20,
-        congestionRating: Ratings.Gold,
-        latency: 123,
-        latencyRating: Ratings.Gold,
-        hops: 3,
-        note: 'Note',
-      };
-      this.allServers.push({...server1,
-        customName: null,
-        personalNote: null,
-        originalDiscoveryData: server1,
-      });
-
-      const server2: VpnServer = {
-        countryCode: 'br',
-        name: 'Test server 14',
-        location: 'Rio de Janeiro - Brazil',
-        pk: '034ec47420176680816e0406250e7156465e4531f5b26057c9f6297bb0303558c7',
-        congestion: 20,
-        congestionRating: Ratings.Silver,
-        latency: 12345,
-        latencyRating: Ratings.Gold,
-        hops: 3,
-        note: 'Note'
-      };
-      this.allServers.push({...server2,
-        customName: null,
-        personalNote: null,
-        originalDiscoveryData: server2
-      });
-
-      const server3: VpnServer = {
-        countryCode: 'de',
-        name: 'Test server 20',
-        location: 'Berlin - Germany',
-        pk: '044ec47420176680816e0406250e7156465e4531f5b26057c9f6297bb0303558c7',
-        congestion: 20,
-        congestionRating: Ratings.Gold,
-        latency: 123,
-        latencyRating: Ratings.Bronze,
-        hops: 7,
-        note: 'Note'
-      };
-      this.allServers.push({...server3,
-        customName: null,
-        personalNote: null,
-        originalDiscoveryData: server3,
-      });
-
-      this.vpnSavedDataService.updateFromDiscovery([server1, server2, server3]);
-
-      this.loading = false;
-
-      this.processAllServers();
-    }, 100);
   }
 
   /**
@@ -626,12 +570,16 @@ export class VpnServerListComponent implements OnDestroy {
       sortableColumns.push(this.nameSortData);
       sortableColumns.push(this.locationSortData);
       sortableColumns.push(this.pkSortData);
+      sortableColumns.push(this.noteSortData);
+      /*
+      // TODO: for currently commented columns, must be deleted or reactivated depending on
+      // what happens to the columns.
       sortableColumns.push(this.congestionSortData);
       sortableColumns.push(this.congestionRatingSortData);
       sortableColumns.push(this.latencySortData);
       sortableColumns.push(this.latencyRatingSortData);
       sortableColumns.push(this.hopsSortData);
-      sortableColumns.push(this.noteSortData);
+      */
 
       defaultColumn = 0;
       tieBreakerColumn = 1;
@@ -700,7 +648,9 @@ export class VpnServerListComponent implements OnDestroy {
         maxlength: 100,
       }
     ];
-
+    /*
+    // TODO: for currently commented columns, must be deleted or reactivated depending on
+    // what happens to the columns.
     if (this.currentList === Lists.Public) {
       this.filterProperties.push({
         filterName: 'vpn.server-list.filter-dialog.congestion-rating',
@@ -750,6 +700,7 @@ export class VpnServerListComponent implements OnDestroy {
         ],
       });
     }
+    */
   }
 
   /**
@@ -787,26 +738,35 @@ export class VpnServerListComponent implements OnDestroy {
     return countriesList[countryCode.toUpperCase()] ? countriesList[countryCode.toUpperCase()] : countryCode;
   }
 
+
+  // TODO: the functions below are for currently commented columns, must be deleted or reactivated
+  // depending on what happens to the columns.
+
   /**
    * Gets the name of the translatable var that must be used for showing a latency value. This
    * allows to add the correct measure suffix.
    */
+  /*
   getLatencyValueString(latency: number): string {
     return VpnHelpers.getLatencyValueString(latency);
   }
+  */
 
   /**
    * Gets the string value to show in the UI a latency value with an adecuate number of decimals.
    * This function converts the value from ms to segs, if appropriate, so the value must be shown
    * using the var returned by getLatencyValueString.
    */
+  /*
   getPrintableLatency(latency: number): string {
     return VpnHelpers.getPrintableLatency(latency);
   }
+  */
 
   /**
    * Gets the class that must be used for showing the color of a congestion value.
    */
+  /*
   getCongestionTextColorClass(congestion: number): string {
     if (congestion < 60) {
       return 'green-value';
@@ -816,10 +776,12 @@ export class VpnServerListComponent implements OnDestroy {
 
     return 'red-value';
   }
+  */
 
   /**
    * Gets the class that must be used for showing the color of a latency value.
    */
+  /*
   getLatencyTextColorClass(latency: number): string {
     if (latency < 200) {
       return 'green-value';
@@ -829,10 +791,12 @@ export class VpnServerListComponent implements OnDestroy {
 
     return 'red-value';
   }
+  */
 
   /**
    * Gets the class that must be used for showing the color of a hops value.
    */
+  /*
   getHopsTextColorClass(hops: number): string {
     if (hops < 5) {
       return 'green-value';
@@ -842,10 +806,12 @@ export class VpnServerListComponent implements OnDestroy {
 
     return 'red-value';
   }
+  */
 
   /**
    * Returns the name of the image that must be shown for a rating value.
    */
+  /*
   getRatingIcon(rating: Ratings): string {
     if (rating === Ratings.Gold) {
       return 'gold-rating';
@@ -855,10 +821,12 @@ export class VpnServerListComponent implements OnDestroy {
 
     return 'bronze-rating';
   }
+  */
 
   /**
    * Returns the translatable var for describing a rating value.
    */
+  /*
   getRatingText(rating: Ratings): string {
     if (rating === Ratings.Gold) {
       return 'vpn.server-list.gold-rating-info';
@@ -868,10 +836,5 @@ export class VpnServerListComponent implements OnDestroy {
 
     return 'vpn.server-list.bronze-rating-info';
   }
-
-  private closeCheckVpnSubscription() {
-    if (this.checkVpnSubscription) {
-      this.checkVpnSubscription.unsubscribe();
-    }
-  }
+  */
 }

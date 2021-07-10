@@ -7,7 +7,7 @@ import { NodeComponent } from '../../node.component';
 import TimeUtils, { ElapsedTime } from 'src/app/utils/timeUtils';
 import { LabeledElementTypes, StorageService } from 'src/app/services/storage.service';
 import { NodeService, HealthStatus } from 'src/app/services/node.service';
-import { RouterConfigComponent } from './router-config/router-config.component';
+import { RouterConfigComponent, RouterConfigParams } from './router-config/router-config.component';
 
 /**
  * Shows the basic info of a node.
@@ -52,7 +52,8 @@ export class NodeInfoContentComponent {
   }
 
   changeRouterConfig() {
-    RouterConfigComponent.openDialog(this.dialog, this.node).afterClosed().subscribe((changed: boolean) => {
+    const params: RouterConfigParams = {nodePk: this.node.localPk, minHops: this.node.minHops};
+    RouterConfigComponent.openDialog(this.dialog, params).afterClosed().subscribe((changed: boolean) => {
       if (changed) {
         NodeComponent.refreshCurrentDisplayedData();
       }

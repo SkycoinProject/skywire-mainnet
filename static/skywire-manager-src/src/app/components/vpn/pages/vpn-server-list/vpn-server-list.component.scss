@@ -140,7 +140,8 @@ tr {
 .history-pk-column {
   width: 20% !important;
 }
-
+/*
+// TODO: for currently commented columns, must be deleted or reactivated depending on what happens to the columns.
 .public-pk-column {
   width: 12% !important;
 }
@@ -158,7 +159,7 @@ tr {
   min-width: 60px;
   @extend .single-line;
 }
-
+*/
 .icon-fixer {
   line-height: 0px;
 }
@@ -193,7 +194,8 @@ tr {
     @extend .single-line;
     flex-grow: 1;
   }
-
+  /*
+  // TODO: for currently commented columns, must be deleted or reactivated depending on what happens to the columns.
   .star-container {
     height: 0px;
     position: relative;
@@ -203,6 +205,7 @@ tr {
       font-size: 10px;
     }
   }
+  */
 }
 
 .flag {
@@ -220,15 +223,16 @@ tr {
   }
 }
 
+.center {
+  text-align: center;
+}
+/*
+// TODO: for currently commented columns, must be deleted or reactivated depending on what happens to the columns.
 .rating {
   width: 14px;
   height: 14px;
   display: inline-block;
   background-size: contain;
-}
-
-.center {
-  text-align: center;
 }
 
 .green-value {
@@ -242,7 +246,7 @@ tr {
 .red-value {
   color: $red-clear !important;
 }
-
+*/
 .alert-icon {
   vertical-align: middle;
   margin-right: 10px;
