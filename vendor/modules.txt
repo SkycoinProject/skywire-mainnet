@@ -2,7 +2,6 @@
 ## explicit
 github.com/AudriusButkevicius/pfilter
 # github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d
-## explicit
 github.com/StackExchange/wmi
 # github.com/VictoriaMetrics/metrics v1.17.2
 ## explicit
@@ -24,14 +23,39 @@ github.com/dsnet/compress/bzip2/internal/sais
 github.com/dsnet/compress/internal
 github.com/dsnet/compress/internal/errors
 github.com/dsnet/compress/internal/prefix
+# github.com/gen2brain/dlgs v0.0.0-20210609125024-bf6c92aaa984
+## explicit
+github.com/gen2brain/dlgs
+# github.com/getlantern/context v0.0.0-20190109183933-c447772a6520
+github.com/getlantern/context
+# github.com/getlantern/errors v1.0.1
+github.com/getlantern/errors
+# github.com/getlantern/golog v0.0.0-20201105130739-9586b8bde3a9
+## explicit
+github.com/getlantern/golog
+# github.com/getlantern/hex v0.0.0-20190417191902-c6586a6fe0b7
+github.com/getlantern/hex
+# github.com/getlantern/hidden v0.0.0-20201229170000-e66e7f878730
+## explicit
+github.com/getlantern/hidden
+# github.com/getlantern/ops v0.0.0-20200403153110-8476b16edcd6
+## explicit
+github.com/getlantern/ops
+# github.com/getlantern/systray v1.1.0
+## explicit
+github.com/getlantern/systray
 # github.com/go-chi/chi v4.1.2+incompatible
 ## explicit
 github.com/go-chi/chi
 github.com/go-chi/chi/middleware
 # github.com/go-ole/go-ole v1.2.4
-## explicit
 github.com/go-ole/go-ole
 github.com/go-ole/go-ole/oleutil
+# github.com/go-stack/stack v1.8.0
+github.com/go-stack/stack
+# github.com/godbus/dbus v4.1.0+incompatible
+## explicit
+github.com/godbus/dbus
 # github.com/golang/gddo v0.0.0-20190419222130-af0f2af80721
 github.com/golang/gddo/httputil
 github.com/golang/gddo/httputil/header
@@ -45,6 +69,8 @@ github.com/google/go-querystring/query
 # github.com/google/uuid v1.1.1
 ## explicit
 github.com/google/uuid
+# github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1
+github.com/gopherjs/gopherjs/js
 # github.com/gorilla/securecookie v1.1.1
 ## explicit
 github.com/gorilla/securecookie
@@ -101,8 +127,12 @@ github.com/mmcloughlin/avo/x86
 github.com/modern-go/concurrent
 # github.com/modern-go/reflect2 v1.0.1
 github.com/modern-go/reflect2
+# github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e
+## explicit
 # github.com/nwaples/rardecode v1.0.0
 github.com/nwaples/rardecode
+# github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
+github.com/oxtoacart/bpool
 # github.com/pierrec/lz4 v2.0.5+incompatible
 github.com/pierrec/lz4
 github.com/pierrec/lz4/internal/xxh32
@@ -116,13 +146,13 @@ github.com/pmezard/go-difflib/difflib
 # github.com/schollz/progressbar/v2 v2.15.0
 ## explicit
 github.com/schollz/progressbar/v2
-# github.com/shirou/gopsutil v2.20.5+incompatible
+# github.com/shirou/gopsutil/v3 v3.21.4
 ## explicit
-github.com/shirou/gopsutil/cpu
-github.com/shirou/gopsutil/internal/common
-github.com/shirou/gopsutil/mem
-github.com/shirou/gopsutil/net
-github.com/shirou/gopsutil/process
+github.com/shirou/gopsutil/v3/cpu
+github.com/shirou/gopsutil/v3/internal/common
+github.com/shirou/gopsutil/v3/mem
+github.com/shirou/gopsutil/v3/net
+github.com/shirou/gopsutil/v3/process
 # github.com/sirupsen/logrus v1.8.1
 ## explicit
 github.com/sirupsen/logrus
@@ -157,6 +187,9 @@ github.com/skycoin/skycoin/src/util/logging
 # github.com/skycoin/yamux v0.0.0-20200803175205-571ceb89da9f
 ## explicit
 github.com/skycoin/yamux
+# github.com/snapcore/snapd v0.0.0-20210709104427-3268a532e396
+## explicit
+github.com/snapcore/snapd/polkit
 # github.com/songgao/water v0.0.0-20200317203138-2b4b6d7c09d8
 ## explicit
 github.com/songgao/water
@@ -165,6 +198,8 @@ github.com/songgao/water
 github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.3
 github.com/spf13/pflag
+# github.com/sqweek/dialog v0.0.0-20210702151303-c326b49d3f01
+## explicit
 # github.com/stretchr/objx v0.1.1
 github.com/stretchr/objx
 # github.com/stretchr/testify v1.6.1
@@ -184,6 +219,10 @@ github.com/templexxx/xor
 # github.com/tjfoc/gmsm v1.3.2
 ## explicit
 github.com/tjfoc/gmsm/sm4
+# github.com/tklauser/go-sysconf v0.3.4
+github.com/tklauser/go-sysconf
+# github.com/tklauser/numcpus v0.2.1
+github.com/tklauser/numcpus
 # github.com/toqueteos/webbrowser v1.2.0
 ## explicit
 github.com/toqueteos/webbrowser
@@ -279,6 +318,8 @@ golang.zx2c4.com/wireguard/tun/wintun/namespaceapi
 golang.zx2c4.com/wireguard/tun/wintun/nci
 golang.zx2c4.com/wireguard/tun/wintun/registry
 golang.zx2c4.com/wireguard/tun/wintun/setupapi
+# gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f
+## explicit
 # gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 gopkg.in/yaml.v3
 # nhooyr.io/websocket v1.8.2

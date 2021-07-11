@@ -85,8 +85,14 @@ func parseV0(cc *Common, raw []byte) (*V1, error) {
 	cc.SK = sk
 	cc.PK = pk
 
+	// generate for all apps as a default
+	genAppConfig := make(map[string]bool, len(appDefaultConfigs))
+	for appName := range appDefaultConfigs {
+		genAppConfig[appName] = true
+	}
+
 	// Start with default config as template.
-	conf, err := defaultConfigFromCommon(cc, false)
+	conf, err := defaultConfigFromCommon(cc, false, genAppConfig)
 	if err != nil {
 		return nil, err
 	}

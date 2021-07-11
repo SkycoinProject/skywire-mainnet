@@ -11,6 +11,7 @@ import (
 	_ "net/http/pprof" // nolint:gosec // https://golang.org/doc/diagnostics.html#profiling
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 	"syscall"
 	"time"
@@ -48,96 +49,95 @@ var (
 	launchBrowser bool
 )
 
-func init() {
-	rootCmd.Flags().StringVar(&tag, "tag", "skywire", "logging tag")
-	rootCmd.Flags().StringVar(&syslogAddr, "syslog", "", "syslog server address. E.g. localhost:514")
-	rootCmd.Flags().StringVarP(&pprofMode, "pprofmode", "p", "", "pprof profiling mode. Valid values: cpu, mem, mutex, block, trace, http")
-	rootCmd.Flags().StringVar(&pprofAddr, "pprofaddr", "localhost:6060", "pprof http port if mode is 'http'")
-	rootCmd.Flags().StringVarP(&confPath, "config", "c", "", "config file location. If the value is 'STDIN', config file will be read from stdin.")
-	rootCmd.Flags().StringVar(&delay, "delay", "0ns", "start delay (deprecated)") // deprecated
-	rootCmd.Flags().BoolVar(&launchBrowser, "launch-browser", false, "open hypervisor web ui (hypervisor only) with system browser")
-}
-
 var rootCmd = &cobra.Command{
 	Use:   "skywire-visor",
 	Short: "Skywire visor",
 	Run: func(_ *cobra.Command, args []string) {
-		log := initLogger(tag, syslogAddr)
-		store, hook := logstore.MakeStore(runtimeLogMaxEntries)
-		log.AddHook(hook)
-
-		delayDuration, err := time.ParseDuration(delay)
-		if err != nil {
-			log.WithError(err).Error("Failed to parse delay duration.")
-			delayDuration = time.Duration(0)
-		}
-
-		log.WithField("delay", delayDuration).
-			WithField("systemd", restartCtx.Systemd()).
-			WithField("parent_systemd", restartCtx.ParentSystemd()).
-			Debugf("Process info")
-
-		// Versions v0.2.3 and below return 0 exit-code after update and do not trigger systemd to restart a process
-		// and therefore do not support restart via systemd.
-		// If --delay flag is passed, version is v0.2.3 or below.
-		// Systemd has PID 1. If PPID is not 1 and PPID of parent process is 1, then
-		// this process is a child process that is run after updating by a skywire-visor that is run by systemd.
-		if delayDuration != 0 && !restartCtx.Systemd() && restartCtx.ParentSystemd() {
-			// As skywire-visor checks if new process is run successfully in `restart.DefaultCheckDelay` after update,
-			// new process should be alive after `restart.DefaultCheckDelay`.
-			time.Sleep(restart.DefaultCheckDelay)
-
-			// When a parent process exits, systemd kills child processes as well,
-			// so a child process can ask systemd to restart service between after restart.DefaultCheckDelay
-			// but before (restart.DefaultCheckDelay + restart.extraWaitingTime),
-			// because after that time a parent process would exit and then systemd would kill its children.
-			// In this case, systemd would kill both parent and child processes,
-			// then restart service using an updated binary.
-			cmd := exec.Command("systemctl", "restart", "skywire-visor") // nolint:gosec
-			if err := cmd.Run(); err != nil {
-				log.WithError(err).Errorf("Failed to restart skywire-visor service")
-			} else {
-				log.WithError(err).Infof("Restarted skywire-visor service")
-			}
-
-			// Detach child from parent.
-			if _, err := syscall.Setsid(); err != nil {
-				log.WithError(err).Errorf("Failed to call setsid()")
-			}
-		}
-
-		time.Sleep(delayDuration)
-
-		if _, err := buildinfo.Get().WriteTo(log.Out); err != nil {
-			log.WithError(err).Error("Failed to output build info.")
-		}
-
-		stopPProf := initPProf(log, tag, pprofMode, pprofAddr)
-		defer stopPProf()
-
-		conf := initConfig(log, args, confPath)
-
-		v, ok := visor.NewVisor(conf, restartCtx)
-		if !ok {
-			log.Fatal("Failed to start visor.")
-		}
-		v.SetLogstore(store)
-
-		if launchBrowser {
-			runBrowser(conf, log)
-		}
-
-		ctx, cancel := cmdutil.SignalContext(context.Background(), log)
-		defer cancel()
-
-		// Wait.
-		<-ctx.Done()
-
-		if err := v.Close(); err != nil {
-			log.WithError(err).Error("Visor closed with error.")
-		}
+		runApp(args...)
 	},
 	Version: buildinfo.Version(),
+}
+
+func runVisor(args []string) {
+	log := initLogger(tag, syslogAddr)
+	store, hook := logstore.MakeStore(runtimeLogMaxEntries)
+	log.AddHook(hook)
+
+	delayDuration, err := time.ParseDuration(delay)
+	if err != nil {
+		log.WithError(err).Error("Failed to parse delay duration.")
+		delayDuration = time.Duration(0)
+	}
+
+	log.WithField("delay", delayDuration).
+		WithField("systemd", restartCtx.Systemd()).
+		WithField("parent_systemd", restartCtx.ParentSystemd()).
+		Debugf("Process info")
+
+	// Versions v0.2.3 and below return 0 exit-code after update and do not trigger systemd to restart a process
+	// and therefore do not support restart via systemd.
+	// If --delay flag is passed, version is v0.2.3 or below.
+	// Systemd has PID 1. If PPID is not 1 and PPID of parent process is 1, then
+	// this process is a child process that is run after updating by a skywire-visor that is run by systemd.
+	if delayDuration != 0 && !restartCtx.Systemd() && restartCtx.ParentSystemd() {
+		// As skywire-visor checks if new process is run successfully in `restart.DefaultCheckDelay` after update,
+		// new process should be alive after `restart.DefaultCheckDelay`.
+		time.Sleep(restart.DefaultCheckDelay)
+
+		// When a parent process exits, systemd kills child processes as well,
+		// so a child process can ask systemd to restart service between after restart.DefaultCheckDelay
+		// but before (restart.DefaultCheckDelay + restart.extraWaitingTime),
+		// because after that time a parent process would exit and then systemd would kill its children.
+		// In this case, systemd would kill both parent and child processes,
+		// then restart service using an updated binary.
+		cmd := exec.Command("systemctl", "restart", "skywire-visor") // nolint:gosec
+		if err := cmd.Run(); err != nil {
+			log.WithError(err).Errorf("Failed to restart skywire-visor service")
+		} else {
+			log.WithError(err).Infof("Restarted skywire-visor service")
+		}
+
+		// Detach child from parent.
+		if _, err := syscall.Setsid(); err != nil {
+			log.WithError(err).Errorf("Failed to call setsid()")
+		}
+	}
+
+	time.Sleep(delayDuration)
+
+	if _, err := buildinfo.Get().WriteTo(log.Out); err != nil {
+		log.WithError(err).Error("Failed to output build info.")
+	}
+
+	stopPProf := initPProf(log, tag, pprofMode, pprofAddr)
+	defer stopPProf()
+
+	conf := initConfig(log, args, confPath)
+
+	v, ok := visor.NewVisor(conf, restartCtx)
+	if !ok {
+		log.Errorln("Failed to start visor.")
+		quitSystray()
+		return
+	}
+	v.SetLogstore(store)
+
+	if launchBrowser {
+		runBrowser(conf, log)
+	}
+
+	ctx, cancel := cmdutil.SignalContext(context.Background(), log)
+	go func() {
+		stopSystray(cancel)
+	}()
+	defer cancel()
+
+	// Wait.
+	<-ctx.Done()
+
+	if err := v.Close(); err != nil {
+		log.WithError(err).Error("Visor closed with error.")
+	}
 }
 
 // Execute executes root CLI command.
@@ -225,7 +225,11 @@ func initConfig(mLog *logging.MasterLogger, args []string, confPath string) *vis
 		}
 
 		if confPath == "" {
-			confPath = "/opt/skywire/" + defaultConfigName
+			if runtime.GOOS == "darwin" {
+				confPath = os.Getenv("HOME") + "/Skywire/" + defaultConfigName
+			} else {
+				confPath = "/opt/skywire/" + defaultConfigName
+			}
 		}
 
 		fallthrough

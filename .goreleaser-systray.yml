@@ -1,0 +1,246 @@
+# This is an example goreleaser.yaml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+
+release:
+  # Repo in which the release will be created.
+  # Default is extracted from the origin remote URL or empty if its private hosted.
+  # Note: it can only be one: either github or gitlab or gitea
+  github:
+    owner: skycoin
+    name: skywire
+
+  draft: true
+
+#before:
+#  hooks:
+#    - make tidy
+builds:
+  - id: skywire-visor-darwin-amd64
+    binary: skywire-visor
+    goos:
+      - darwin
+    goarch:
+      - amd64
+    main: ./cmd/skywire-visor/
+    env:
+      - CGO_ENABLED=1
+      - CC=o64-clang
+      - CXX=o64-clang++
+    flags:
+      - -tags='systray'
+    ldflags: -s -w -X github.com/skycoin/dmsg/buildinfo.version={{.Version}} -X github.com/skycoin/dmsg/buildinfo.commit={{.ShortCommit}} -X github.com/skycoin/dmsg/buildinfo.date={{.Date}}
+
+  - id: skywire-visor-darwin-arm64
+    binary: skywire-visor
+    goos:
+      - darwin
+    goarch:
+      - arm64
+    main: ./cmd/skywire-visor/
+    env:
+      - CGO_ENABLED=1
+      - CC=oa64-clang
+      - CXX=oa64-clang++
+    flags:
+      - -tags='systray'
+    ldflags: -s -w -X github.com/skycoin/dmsg/buildinfo.version={{.Version}} -X github.com/skycoin/dmsg/buildinfo.commit={{.ShortCommit}} -X github.com/skycoin/dmsg/buildinfo.date={{.Date}}
+
+  - id: skywire-visor-linux-arm64
+    binary: skywire-visor
+    goos:
+      - linux
+    goarch:
+      - arm64
+    env:
+      - CGO_ENABLED=1
+      - CC=aarch64-linux-gnu-gcc
+      - CXX=aarch64-linux-gnu-g++
+      - CGO_FLAGS=--sysroot=/sysroot/arm64
+      - CGO_LDFLAGS=--sysroot=/sysroot/arm64
+      - PKG_CONFIG_SYSROOT_DIR=/sysroot/arm64
+      - PKG_CONFIG_PATH=/sysroot/arm64/usr/lib/aarch64-linux-gnu/pkgconfig:/sysroot/arm64/usr/lib/pkgconfig:/sysroot/arm64/usr/share/pkgconfig
+    main: ./cmd/skywire-visor/
+    flags:
+      - -tags='systray'
+    ldflags: -s -w -X github.com/skycoin/dmsg/buildinfo.version={{.Version}} -X github.com/skycoin/dmsg/buildinfo.commit={{.ShortCommit}} -X github.com/skycoin/dmsg/buildinfo.date={{.Date}}
+
+  - id: skywire-visor-linux-amd64
+    binary: skywire-visor
+    goos:
+      - linux
+    goarch:
+      - amd64
+    env:
+      - CGO_ENABLED=1
+      - CC=gcc
+      - CXX=g++
+      - CGO_LDFLAGS=--sysroot=/sysroot/amd64
+      - PKG_CONFIG_SYSROOT_DIR=/sysroot/amd64
+      - PKG_CONFIG_PATH=/sysroot/amd64/usr/lib/x86_64-linux-gnu/pkgconfig:/sysroot/amd64/usr/lib/pkgconfig:/sysroot/amd64/usr/share/pkgconfig
+    main: ./cmd/skywire-visor/
+    flags:
+      - -tags='systray'
+    ldflags: -s -w -X github.com/skycoin/dmsg/buildinfo.version={{.Version}} -X github.com/skycoin/dmsg/buildinfo.commit={{.ShortCommit}} -X github.com/skycoin/dmsg/buildinfo.date={{.Date}}
+
+  - id: skywire-visor-linux-armhf
+    binary: skywire-visor
+    goos:
+      - linux
+    goarch:
+      - arm
+    goarm:
+      - 6
+      - 7
+    env:
+      - CGO_ENABLED=1
+      - CC=arm-linux-gnueabihf-gcc
+      - CXX=arm-linux-gnueabihf-g++
+      - CGO_FLAGS=--sysroot=/sysroot/armhf
+      - CGO_LDFLAGS=--sysroot=/sysroot/armhf
+      - PKG_CONFIG_SYSROOT_DIR=/sysroot/armhf
+      - PKG_CONFIG_PATH=/sysroot/armhf/usr/lib/arm-linux-gnueabihf/pkgconfig:/sysroot/armhf/usr/lib/pkgconfig:/sysroot/armhf/usr/share/pkgconfig
+    main: ./cmd/skywire-visor/
+    flags:
+      - -tags='systray'
+    ldflags: -s -w -X github.com/skycoin/dmsg/buildinfo.version={{.Version}} -X github.com/skycoin/dmsg/buildinfo.commit={{.ShortCommit}} -X github.com/skycoin/dmsg/buildinfo.date={{.Date}}
+
+  - id: skywire-cli
+    binary: skywire-cli
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - 6
+      - 7
+    ignore:
+      - goos: darwin
+        goarch: arm
+    env:
+      - CGO_ENABLED=0
+    main: ./cmd/skywire-cli/
+    flags:
+      - -tags='systray'
+    ldflags: -s -w -X github.com/skycoin/dmsg/buildinfo.version={{.Version}} -X github.com/skycoin/dmsg/buildinfo.commit={{.ShortCommit}} -X github.com/skycoin/dmsg/buildinfo.date={{.Date}}
+
+  - id: skychat
+    binary: apps/skychat
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - 6
+      - 7
+    ignore:
+      - goos: darwin
+        goarch: arm
+    env:
+      - CGO_ENABLED=0
+    main: ./cmd/apps/skychat/
+    ldflags: -s -w -X github.com/skycoin/dmsg/buildinfo.version={{.Version}} -X github.com/skycoin/dmsg/buildinfo.commit={{.ShortCommit}} -X github.com/skycoin/dmsg/buildinfo.date={{.Date}}
+  - id: skysocks
+    binary: apps/skysocks
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - 6
+      - 7
+    ignore:
+      - goos: darwin
+        goarch: arm
+    env:
+      - CGO_ENABLED=0
+    main: ./cmd/apps/skysocks/
+    flags:
+      - -tags='systray'
+    ldflags: -s -w -X github.com/skycoin/dmsg/buildinfo.version={{.Version}} -X github.com/skycoin/dmsg/buildinfo.commit={{.ShortCommit}} -X github.com/skycoin/dmsg/buildinfo.date={{.Date}}
+
+  - id: skysocks-client
+    binary: apps/skysocks-client
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - 6
+      - 7
+    ignore:
+      - goos: darwin
+        goarch: arm
+    env:
+      - CGO_ENABLED=0
+    main: ./cmd/apps/skysocks-client/
+    ldflags: -s -w -X github.com/skycoin/dmsg/buildinfo.version={{.Version}} -X github.com/skycoin/dmsg/buildinfo.commit={{.ShortCommit}} -X github.com/skycoin/dmsg/buildinfo.date={{.Date}}
+    flags:
+      - -tags='systray'
+  - id: vpn-server
+    binary: apps/vpn-server
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - 6
+      - 7
+    ignore:
+      - goos: darwin
+        goarch: arm
+    env:
+      - CGO_ENABLED=0
+    main: ./cmd/apps/vpn-server/
+    ldflags: -s -w -X github.com/skycoin/dmsg/buildinfo.version={{.Version}} -X github.com/skycoin/dmsg/buildinfo.commit={{.ShortCommit}} -X github.com/skycoin/dmsg/buildinfo.date={{.Date}}
+    flags:
+      - -tags='systray'
+  - id: vpn-client
+    binary: apps/vpn-client
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - 6
+      - 7
+    ignore:
+      - goos: darwin
+        goarch: arm
+    env:
+      - CGO_ENABLED=0
+    main: ./cmd/apps/vpn-client/
+    ldflags: -s -w -X github.com/skycoin/dmsg/buildinfo.version={{.Version}} -X github.com/skycoin/dmsg/buildinfo.commit={{.ShortCommit}} -X github.com/skycoin/dmsg/buildinfo.date={{.Date}}
+    flags:
+      - -tags='systray'
+archives:
+  - format: tar.gz
+    wrap_in_directory: false
+    name_template: 'skywire-{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+checksum:
+  name_template: 'checksums-linux.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'

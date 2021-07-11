@@ -6,7 +6,9 @@
 .PHONY : docker-image docker-clean docker-network
 .PHONY : docker-apps docker-bin docker-volume
 .PHONY : docker-run docker-stop
+.PHONY : sysroot sysroot-clean
 
+SHELL := /bin/bash
 VERSION := $(shell git describe)
 #VERSION := v0.1.0 # for debugging updater
 
@@ -20,6 +22,7 @@ DMSG_BASE := github.com/skycoin/dmsg
 OPTS?=GO111MODULE=on
 STATIC_OPTS?= $(OPTS) CC=musl-gcc
 MANAGER_UI_DIR = static/skywire-manager-src
+GO_BUILDER_VERSION=v1.16.4
 MANAGER_UI_BUILT_DIR=cmd/skywire-visor/static
 
 TEST_OPTS:=-cover -timeout=5m -mod=vendor
@@ -44,6 +47,8 @@ BUILD_OPTS_DEPLOY?="-ldflags=$(BUILDINFO) -w -s"
 check: lint test ## Run linters and tests
 
 build: host-apps bin ## Install dependencies, build apps and binaries. `go build` with ${OPTS}
+
+build-systray: host-apps bin-systray ## Install dependencies, build apps and binaries `go build` with ${OPTS}, with CGO and systray
 
 build-static: host-apps-static bin-static ## Build apps and binaries. `go build` with ${OPTS}
 
@@ -73,6 +78,9 @@ lint: ## Run linters. Use make install-linters first
 	${OPTS} golangci-lint run -c .golangci.yml ./...
 	# The govet version in golangci-lint is out of date and has spurious warnings, run it separately
 
+lint-ci:
+	${OPTS} golangci-lint run --build-tags=musl -c .golangci.yml ./...
+
 lint-extra: ## Run linters with extra checks.
 	${OPTS} golangci-lint run --no-config --enable-all ./...
 	# The govet version in golangci-lint is out of date and has spurious warnings, run it separately
@@ -100,6 +108,33 @@ format: tidy ## Formats the code. Must have goimports and goimports-reviser inst
 dep: tidy ## Sorts dependencies
 	${OPTS} go mod vendor -v
 
+snapshot-systray: sysroot ## create snapshot release
+	docker run --rm --privileged \
+		-v $(CURDIR):/go/src/github.com/skycoin/skywire \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		-v $(GOPATH)/src:/go/src \
+		-v $(CURDIR)/sysroot:/sysroot \
+		-w /go/src/github.com/skycoin/skywire \
+		alexadhyatma/golang-cross:$(GO_BUILDER_VERSION) -f /go/src/github.com/skycoin/skywire/.goreleaser-systray.yml --snapshot --skip-publish --rm-dist
+
+snapshot:
+	goreleaser --snapshot --skip-publish --rm-dist
+
+snapshot-clean: ## Cleans snapshot / release
+	rm -rf ./dist
+
+sysroot:
+	mkdir -p ./sysroot
+	@echo "getting sysroot for cross compilation"
+	if [[ ! -f /tmp/snapshot-05-12-2021.tar.gz ]]; then \
+  		curl -L -o /tmp/snapshot-05-12-2021.tar.gz "https://alexadhy-git.s3-ap-southeast-1.amazonaws.com/snapshot-05-12-2021.tar.gz"; \
+	fi
+	tar xf /tmp/snapshot-05-12-2021.tar.gz -C ./sysroot/
+
+sysroot-clean:
+	@rm -rf ./sysroot
+	@rm -rf /tmp/sysroot-git
+
 host-apps: ## Build app
 	${OPTS} go build ${BUILD_OPTS} -o ./apps/skychat ./cmd/apps/skychat
 	${OPTS} go build ${BUILD_OPTS} -o ./apps/skysocks ./cmd/apps/skysocks
@@ -121,6 +156,11 @@ bin: ## Build `skywire-visor`, `skywire-cli`
 	${OPTS} go build ${BUILD_OPTS} -o ./skywire-cli  ./cmd/skywire-cli
 	${OPTS} go build ${BUILD_OPTS} -o ./setup-node ./cmd/setup-node
 
+bin-systray:
+	${OPTS} go build ${BUILD_OPTS} -tags systray -o ./skywire-visor ./cmd/skywire-visor
+	${OPTS} go build ${BUILD_OPTS} -tags systray -o ./skywire-cli ./cmd/skywire-cli
+	${OPTS} go build ${BUILD_OPTS} -tags systray -o ./setup-node ./cmd/setup-node
+
 # Static Bin
 bin-static: ## Build `skywire-visor`, `skywire-cli`
 	${STATIC_OPTS} go build -trimpath --ldflags '-linkmode external -extldflags "-static" -buildid=' -o ./skywire-visor ./cmd/skywire-visor
@@ -134,11 +174,20 @@ build-deploy: ## Build for deployment Docker images
 	${OPTS} go build ${BUILD_OPTS_DEPLOY} -o /release/apps/skysocks ./cmd/apps/skysocks
 	${OPTS} go build ${BUILD_OPTS_DEPLOY} -o /release/apps/skysocks-client ./cmd/apps/skysocks-client
 
+github-release-systray: sysroot ## Create a GitHub release
+	docker run --rm --privileged \
+		-v $(CURDIR):/go/src/github.com/skycoin/skywire \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		-v $(GOPATH)/src:/go/src \
+		-v $(CURDIR)/sysroot:/sysroot \
+		-w /go/src/github.com/skycoin/skywire \
+		alexadhyatma/golang-cross:$(GO_BUILDER_VERSION) -f /go/src/github.com/skycoin/skywire/.goreleaser-systray.yml --rm-dist
+
+github-release:
+	goreleaser --rm-dist
+
 build-docker: ## Build docker image
 	./ci_scripts/docker-push.sh -t ${BRANCH} -b
-
-github-release: ## Create a GitHub release
-	goreleaser --rm-dist
 
 # Manager UI
 install-deps-ui:  ## Install the UI dependencies

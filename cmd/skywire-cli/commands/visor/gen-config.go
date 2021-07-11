@@ -13,6 +13,7 @@ import (
 	"github.com/skycoin/skycoin/src/util/logging"
 	"github.com/spf13/cobra"
 
+	"github.com/skycoin/skywire/pkg/skyenv"
 	"github.com/skycoin/skywire/pkg/visor/visorconfig"
 )
 
@@ -21,13 +22,19 @@ func init() {
 }
 
 var (
-	sk            cipher.SecKey
-	output        string
-	replace       bool
-	testEnv       bool
-	packageConfig bool
-	hypervisor    bool
-	hypervisorPKs string
+	sk                cipher.SecKey
+	output            string
+	replace           bool
+	testEnv           bool
+	packageConfig     bool
+	hypervisor        bool
+	hypervisorPKs     string
+	hasVPNClient      bool
+	hasVPNServer      bool
+	hasSkychat        bool
+	hasSkysocks       bool
+	hasSkysocksClient bool
+	noApps            bool
 )
 
 func init() {
@@ -38,6 +45,12 @@ func init() {
 	genConfigCmd.Flags().BoolVarP(&testEnv, "testenv", "t", false, "whether to use production or test deployment service.")
 	genConfigCmd.Flags().BoolVar(&hypervisor, "is-hypervisor", false, "whether to generate config to run this visor as a hypervisor.")
 	genConfigCmd.Flags().StringVar(&hypervisorPKs, "hypervisor-pks", "", "public keys of hypervisors that should be added to this visor")
+	genConfigCmd.Flags().BoolVar(&hasVPNClient, "has-vpn-client", false, "generate config for VPN client")
+	genConfigCmd.Flags().BoolVar(&hasVPNServer, "has-vpn-server", false, "generate config for VPN server")
+	genConfigCmd.Flags().BoolVar(&hasSkychat, "has-skychat", false, "generate config for Skychat")
+	genConfigCmd.Flags().BoolVar(&hasSkysocks, "has-skysocks", false, "generate config for Skysocks")
+	genConfigCmd.Flags().BoolVar(&hasSkysocksClient, "has-skysocks-client", false, "generate config for Skysocks client")
+	genConfigCmd.Flags().BoolVar(&noApps, "no-apps", false, "generate config with no apps")
 }
 
 var genConfigCmd = &cobra.Command{
@@ -63,7 +76,8 @@ var genConfigCmd = &cobra.Command{
 		}
 
 		// Determine config type to generate.
-		var genConf func(log *logging.MasterLogger, confPath string, sk *cipher.SecKey, hypervisor bool) (*visorconfig.V1, error)
+		var genConf func(log *logging.MasterLogger, confPath string, sk *cipher.SecKey, hypervisor bool,
+			genAppConfig map[string]bool) (*visorconfig.V1, error)
 
 		// to be improved later
 		if packageConfig {
@@ -74,8 +88,10 @@ var genConfigCmd = &cobra.Command{
 			genConf = visorconfig.MakeDefaultConfig
 		}
 
+		genAppConfigs := getGenAppConfigs()
+
 		// Generate config.
-		conf, err := genConf(mLog, output, &sk, hypervisor)
+		conf, err := genConf(mLog, output, &sk, hypervisor, genAppConfigs)
 		if err != nil {
 			logger.WithError(err).Fatal("Failed to create config.")
 		}
@@ -125,4 +141,33 @@ func readOldConfig(log *logging.MasterLogger, confPath string, replace bool) (*v
 	}
 
 	return conf, true
+}
+
+func getGenAppConfigs() map[string]bool {
+	genAppConfigs := map[string]bool{
+		skyenv.VPNClientName:      hasVPNClient,
+		skyenv.VPNServerName:      hasVPNServer,
+		skyenv.SkychatName:        hasSkychat,
+		skyenv.SkysocksName:       hasSkysocks,
+		skyenv.SkysocksClientName: hasSkysocksClient,
+	}
+
+	for _, gen := range genAppConfigs {
+		// at least one flag is specified, return as is
+		if gen {
+			return genAppConfigs
+		}
+	}
+
+	if noApps {
+		return genAppConfigs
+	}
+
+	// if no flags were passed at all, we need to generate config for all apps
+	// as a default behavior
+	for appName := range genAppConfigs {
+		genAppConfigs[appName] = true
+	}
+
+	return genAppConfigs
 }

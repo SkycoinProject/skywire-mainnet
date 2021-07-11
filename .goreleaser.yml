@@ -31,12 +31,11 @@ builds:
     ignore:
       - goos: darwin
         goarch: 386
-      - goos: darwin
-        goarch: arm64
     env:
       - CGO_ENABLED=0
     main: ./cmd/skywire-visor/
     ldflags: -s -w -X github.com/skycoin/dmsg/buildinfo.version={{.Version}} -X github.com/skycoin/dmsg/buildinfo.commit={{.ShortCommit}} -X github.com/skycoin/dmsg/buildinfo.date={{.Date}}
+
   - id: skywire-cli
     binary: skywire-cli
     goos:
@@ -53,8 +52,6 @@ builds:
     ignore:
       - goos: darwin
         goarch: 386
-      - goos: darwin
-        goarch: arm64
     env:
       - CGO_ENABLED=0
     main: ./cmd/skywire-cli/
@@ -75,8 +72,6 @@ builds:
     ignore:
       - goos: darwin
         goarch: 386
-      - goos: darwin
-        goarch: arm64
     env:
       - CGO_ENABLED=0
     main: ./cmd/apps/skychat/
@@ -97,8 +92,6 @@ builds:
     ignore:
       - goos: darwin
         goarch: 386
-      - goos: darwin
-        goarch: arm64
     env:
       - CGO_ENABLED=0
     main: ./cmd/apps/skysocks/
@@ -119,8 +112,6 @@ builds:
     ignore:
       - goos: darwin
         goarch: 386
-      - goos: darwin
-        goarch: arm64
     env:
       - CGO_ENABLED=0
     main: ./cmd/apps/skysocks-client/
@@ -141,8 +132,6 @@ builds:
     ignore:
       - goos: darwin
         goarch: 386
-      - goos: darwin
-        goarch: arm64
     env:
       - CGO_ENABLED=0
     main: ./cmd/apps/vpn-server/
@@ -163,8 +152,6 @@ builds:
     ignore:
       - goos: darwin
         goarch: 386
-      - goos: darwin
-        goarch: arm64
     env:
       - CGO_ENABLED=0
     main: ./cmd/apps/vpn-client/
@@ -172,7 +159,7 @@ builds:
 archives:
   - format: tar.gz
     wrap_in_directory: false
-    name_template: 'skywire-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    name_template: 'skywire-{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
 checksum:
   name_template: 'checksums.txt'
 snapshot:
@@ -181,5 +168,5 @@ changelog:
   sort: asc
   filters:
     exclude:
-    - '^docs:'
-    - '^test:'
+      - '^docs:'
+      - '^test:'

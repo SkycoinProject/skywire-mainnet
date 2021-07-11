@@ -37,11 +37,9 @@ pkg/visor/foo/
 go.mod-e
 
 # goreleaser and frontend builds
-dist
-
-# release
 *.deb
-
+/sysroot
 static/skywire-manager-src/dist/*
-
-/visor/
+/visor
+/dist-linux
+/dist

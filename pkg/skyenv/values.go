@@ -9,7 +9,6 @@ import (
 // Constants for skywire root directories.
 const (
 	DefaultSkywirePath = "."
-	PackageSkywirePath = "/opt/skywire"
 )
 
 // Constants for old default services.
@@ -57,10 +56,9 @@ const (
 
 // Default dmsgpty constants.
 const (
-	DmsgPtyPort uint16 = 22
-
-	DefaultDmsgPtyCLINet  = "unix"
-	DefaultDmsgPtyCLIAddr = "/tmp/dmsgpty.sock"
+	DmsgPtyPort           uint16 = 22
+	DefaultDmsgPtyCLINet         = "unix"
+	DefaultDmsgPtyCLIAddr        = "/tmp/dmsgpty.sock"
 )
 
 // Default STCP constants.
@@ -103,13 +101,11 @@ const (
 	AppDiscUpdateInterval = time.Minute
 	DefaultAppBinPath     = DefaultSkywirePath + "/apps"
 	DefaultLogLevel       = "info"
-	PackageAppBinPath     = PackageSkywirePath + "/apps"
 )
 
 // Default local constants
 const (
 	DefaultLocalPath = DefaultSkywirePath + "/local"
-	PackageLocalPath = PackageSkywirePath + "/local"
 )
 
 // Default hypervisor constants
@@ -120,9 +116,37 @@ const (
 	DefaultTLSKey       = DefaultSkywirePath + "/ssl/key.pem"
 	DefaultTLSCert      = DefaultSkywirePath + "/ssl/cert.pem"
 	PackageEnableTLS    = true
-	PackageTLSKey       = PackageSkywirePath + "/ssl/key.pem"
-	PackageTLSCert      = PackageSkywirePath + "/ssl/cert.pem"
 )
+
+// PackageDmsgPtyWhiteList gets dmsgpty whitelist path for installed Skywire.
+func PackageDmsgPtyWhiteList() string {
+	return PackageSkywirePath() + "/dmsgpty/whitelist.json"
+}
+
+// PackageAppLocalPath gets `.local` path for installed Skywire.
+func PackageAppLocalPath() string {
+	return PackageSkywirePath() + "/local"
+}
+
+// PackageAppBinPath gets apps path for installed Skywire.
+func PackageAppBinPath() string {
+	return PackageSkywirePath() + "/apps"
+}
+
+// PackageTpLogStore gets transport logs path for installed Skywire.
+func PackageTpLogStore() string {
+	return PackageSkywirePath() + "/transport_logs"
+}
+
+// PackageTLSKey gets TLS key path for installed Skywire.
+func PackageTLSKey() string {
+	return PackageSkywirePath() + "/ssl/key.pem"
+}
+
+// PackageTLSCert gets TLS cert path for installed Skywire.
+func PackageTLSCert() string {
+	return PackageSkywirePath() + "/ssl/cert.pem"
+}
 
 // MustPK unmarshals string PK to cipher.PubKey. It panics if unmarshaling fails.
 func MustPK(pk string) cipher.PubKey {
