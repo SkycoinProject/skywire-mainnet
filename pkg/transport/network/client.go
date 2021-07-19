@@ -158,6 +158,7 @@ func (c *genericClient) wrapConn(rawConn net.Conn, hs handshake.Handshake, initi
 	conn, err := doHandshake(rawConn, hs, c.netType, c.log)
 	if err != nil {
 		onClose()
+		return nil, err
 	}
 	conn.freePort = onClose
 	c.log.Infof("Sent handshake to %v, local addr %v, remote addr %v", rawConn.RemoteAddr(), conn.lAddr, conn.rAddr)
