@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ccding/go-stun/stun"
 	"github.com/sirupsen/logrus"
 	"github.com/skycoin/dmsg"
 	"github.com/skycoin/dmsg/cipher"
@@ -63,6 +64,14 @@ var (
 	ar vinit.Module
 	// App discovery
 	disc vinit.Module
+	// Stun client
+	sc vinit.Module
+	// SUDPH client
+	sudph vinit.Module
+	// SCTPR client
+	sctpr vinit.Module
+	// SCTP client
+	sctp vinit.Module
 	// dmsg pty: a remote terminal to the visor working over dmsg protocol
 	pty vinit.Module
 	// Dmsg module
@@ -85,6 +94,8 @@ var (
 	pvs vinit.Module
 	// Public visor: advertise current visor as public
 	pv vinit.Module
+	// Transport module (this is not a functional module but a grouping of all heavy transport types initializations)
+	tm vinit.Module
 	// hypervisor module
 	hv vinit.Module
 	// dmsg ctrl
@@ -105,20 +116,27 @@ func registerModules(logger *logging.MasterLogger) {
 	ebc = maker("event_broadcaster", initEventBroadcaster)
 	ar = maker("address_resolver", initAddressResolver)
 	disc = maker("discovery", initDiscovery)
+	tr = maker("transport", initTransport, &ar, &ebc)
+
+	sc = maker("stun_client", initStunClient)
+	sudph = maker("sudph", initSudphClient, &sc, &tr)
+	sctpr = maker("sctpr", initSctprClient, &tr)
+	sctp = maker("sctp", initSctpClient, &tr)
 	dmsgC = maker("dmsg", initDmsg, &ebc)
-	dmsgCtrl = maker("dmsg_ctrl", initDmsgCtrl, &dmsgC)
+	dmsgCtrl = maker("dmsg_ctrl", initDmsgCtrl, &dmsgC, &tr)
+
 	pty = maker("dmsg_pty", initDmsgpty, &dmsgC)
-	tr = maker("transport", initTransport, &ar, &ebc, &dmsgC)
 	rt = maker("router", initRouter, &tr, &dmsgC)
 	launch = maker("launcher", initLauncher, &ebc, &disc, &dmsgC, &tr, &rt)
 	cli = maker("cli", initCLI)
 	hvs = maker("hypervisors", initHypervisors, &dmsgC)
 	ut = maker("uptime_tracker", initUptimeTracker)
 	pv = maker("public_visors", initPublicVisors, &tr)
-	pvs = maker("public_visor", initPublicVisor, &tr, &ar, &disc)
 	trs = maker("transport_setup", initTransportSetup, &dmsgC, &tr)
+	tm = vinit.MakeModule("transports", vinit.DoNothing, logger, &sc, &sudph, &dmsgCtrl)
+	pvs = maker("public_visor", initPublicVisor, &tr, &ar, &disc)
 	vis = vinit.MakeModule("visor", vinit.DoNothing, logger, &up, &ebc, &ar, &disc, &pty,
-		&tr, &rt, &launch, &cli, &trs, &hvs, &ut, &pv, &pvs, &dmsgCtrl)
+		&tr, &rt, &launch, &cli, &hvs, &ut, &pv, &pvs, &trs, &sctp, &sctpr)
 
 	hv = maker("hypervisor", initHypervisor, &vis)
 }
@@ -181,6 +199,14 @@ func initDiscovery(ctx context.Context, v *Visor, log *logging.Logger) error {
 	return nil
 }
 
+func initStunClient(ctx context.Context, v *Visor, log *logging.Logger) error {
+	sc := network.GetStunDetails(v.conf.StunServers, log)
+	v.initLock.Lock()
+	v.stunClient = sc
+	v.initLock.Unlock()
+	return nil
+}
+
 func initDmsg(ctx context.Context, v *Visor, log *logging.Logger) error {
 	if v.conf.Dmsg == nil {
 		return fmt.Errorf("cannot initialize dmsg: empty configuration")
@@ -194,10 +220,6 @@ func initDmsg(ctx context.Context, v *Visor, log *logging.Logger) error {
 	v.initLock.Lock()
 	v.dmsgC = dmsgC
 	v.initLock.Unlock()
-
-	v.pushCloseStack("dmsgC", func() error {
-		return dmsgC.Close()
-	})
 	return nil
 }
 
@@ -206,23 +228,52 @@ func initDmsgCtrl(ctx context.Context, v *Visor, _ *logging.Logger) error {
 	if dmsgC == nil {
 		return nil
 	}
+
 	const dmsgTimeout = time.Second * 20
 	logger := dmsgC.Logger().WithField("timeout", dmsgTimeout)
 	logger.Info("Connecting to the dmsg network...")
 	select {
 	case <-time.After(dmsgTimeout):
 		logger.Warn("Failed to connect to the dmsg network, will try again later.")
+		go func() {
+			<-v.dmsgC.Ready()
+			logger.Info("Connected to the dmsg network.")
+			v.tpM.InitDmsgClient(ctx, dmsgC)
+		}()
 	case <-v.dmsgC.Ready():
 		logger.Info("Connected to the dmsg network.")
+		v.tpM.InitDmsgClient(ctx, dmsgC)
 	}
 	// dmsgctrl setup
 	cl, err := dmsgC.Listen(skyenv.DmsgCtrlPort)
 	if err != nil {
 		return err
 	}
-	v.pushCloseStack("snet.dmsgctrl", cl.Close)
+	v.pushCloseStack("dmsgctrl", cl.Close)
 
 	dmsgctrl.ServeListener(cl, 0)
+	return nil
+}
+
+func initSudphClient(ctx context.Context, v *Visor, log *logging.Logger) error {
+	switch v.stunClient.NATType {
+	case stun.NATSymmetric, stun.NATSymmetricUDPFirewall:
+		log.Infof("SUDPH transport wont be available as visor is under %v", v.stunClient.NATType.String())
+	default:
+		v.tpM.InitClient(ctx, network.SUDPH)
+	}
+	return nil
+}
+
+func initSctprClient(ctx context.Context, v *Visor, log *logging.Logger) error {
+	v.tpM.InitClient(ctx, network.STCPR)
+	return nil
+}
+
+func initSctpClient(ctx context.Context, v *Visor, log *logging.Logger) error {
+	if v.conf.STCP != nil {
+		v.tpM.InitClient(ctx, network.STCP)
+	}
 	return nil
 }
 
@@ -245,15 +296,19 @@ func initTransport(ctx context.Context, v *Visor, log *logging.Logger) error {
 	managerLogger := v.MasterLogger().PackageLogger("transport_manager")
 
 	// todo: pass down configuration?
-	table := stcp.NewTable(v.conf.STCP.PKTable)
+	var table stcp.PKTable
+	var listenAddr string
+	if v.conf.STCP != nil {
+		table = stcp.NewTable(v.conf.STCP.PKTable)
+		listenAddr = v.conf.STCP.LocalAddr
+	}
 	factory := network.ClientFactory{
 		PK:         v.conf.PK,
 		SK:         v.conf.SK,
-		ListenAddr: v.conf.STCP.LocalAddr,
+		ListenAddr: listenAddr,
 		PKTable:    table,
 		ARClient:   v.arClient,
 		EB:         v.ebc,
-		DmsgC:      v.dmsgC,
 	}
 	tpM, err := transport.NewManager(managerLogger, v.arClient, v.ebc, &tpMConf, factory)
 	if err != nil {
@@ -261,19 +316,8 @@ func initTransport(ctx context.Context, v *Visor, log *logging.Logger) error {
 		return err
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
-	wg := new(sync.WaitGroup)
-	wg.Add(1)
-
-	go func() {
-		defer wg.Done()
-		tpM.Serve(ctx)
-	}()
-
 	v.pushCloseStack("transport.manager", func() error {
-		cancel()
 		err := tpM.Close()
-		wg.Wait()
 		return err
 	})
 
@@ -285,12 +329,23 @@ func initTransport(ctx context.Context, v *Visor, log *logging.Logger) error {
 
 func initTransportSetup(ctx context.Context, v *Visor, log *logging.Logger) error {
 	ctx, cancel := context.WithCancel(ctx)
-	ts, err := ts.NewTransportListener(ctx, v.conf, v.dmsgC, v.tpM, v.MasterLogger())
-	if err != nil {
-		cancel()
-		return err
-	}
-	go ts.Serve(ctx)
+	// To remove the block set by NewTransportListener if dmsg is not initilized
+	go func() {
+		ts, err := ts.NewTransportListener(ctx, v.conf, v.dmsgC, v.tpM, v.MasterLogger())
+		if err != nil {
+			log.Warn(err)
+			cancel()
+		}
+		select {
+		case <-ctx.Done():
+		default:
+			go ts.Serve(ctx)
+		}
+	}()
+
+	// waiting for atleast one transport to initilize
+	<-v.tpM.Ready()
+
 	v.pushCloseStack("transport_setup.rpc", func() error {
 		cancel()
 		return nil

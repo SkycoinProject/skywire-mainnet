@@ -30,6 +30,7 @@ const V101Name = "v1.0.1"
 // Added transport_setup_nodes field to transport section
 // Removed authorization_file field from dmsgpty section
 // Default urls are changed to newer shortned ones
+// Added stun_servers field to the config
 const V110Name = "v1.1.0"
 
 // V1Name is the semantic version string for the most recent version of V1.
@@ -53,6 +54,7 @@ type V1 struct {
 
 	LogLevel          string   `json:"log_level"`
 	LocalPath         string   `json:"local_path"`
+	StunServers       []string `json:"stun_servers"`
 	ShutdownTimeout   Duration `json:"shutdown_timeout,omitempty"`    // time value, examples: 10s, 1m, etc
 	RestartCheckDelay Duration `json:"restart_check_delay,omitempty"` // time value, examples: 10s, 1m, etc
 	IsPublic          bool     `json:"is_public"`

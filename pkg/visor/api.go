@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ccding/go-stun/stun"
 	"github.com/google/uuid"
 	"github.com/skycoin/dmsg/buildinfo"
 	"github.com/skycoin/dmsg/cipher"
@@ -91,11 +92,15 @@ type Overview struct {
 	Transports      []*TransportSummary  `json:"transports"`
 	RoutesCount     int                  `json:"routes_count"`
 	LocalIP         string               `json:"local_ip"`
+	PublicIP        string               `json:"public_ip"`
+	IsSymmetricNAT  bool                 `json:"is_symmetic_nat"`
 }
 
 // Overview implements API.
 func (v *Visor) Overview() (*Overview, error) {
 	var tSummaries []*TransportSummary
+	var publicIP string
+	var isSymmetricNAT bool
 	if v == nil {
 		panic("v is nil")
 	}
@@ -107,6 +112,15 @@ func (v *Visor) Overview() (*Overview, error) {
 			newTransportSummary(v.tpM, tp, true, v.router.SetupIsTrusted(tp.Remote())))
 		return true
 	})
+	if v.stunClient != nil {
+		switch v.stunClient.NATType {
+		case stun.NATNone, stun.NATFull, stun.NATRestricted, stun.NATPortRestricted:
+			publicIP = v.stunClient.PublicIP.IP()
+			isSymmetricNAT = true
+		case stun.NATSymmetric, stun.NATSymmetricUDPFirewall:
+			isSymmetricNAT = false
+		}
+	}
 
 	overview := &Overview{
 		PubKey:          v.conf.PK,
@@ -115,6 +129,8 @@ func (v *Visor) Overview() (*Overview, error) {
 		Apps:            v.appL.AppStates(),
 		Transports:      tSummaries,
 		RoutesCount:     v.router.RoutesCount(),
+		PublicIP:        publicIP,
+		IsSymmetricNAT:  isSymmetricNAT,
 	}
 
 	localIPs, err := netutil.DefaultNetworkInterfaceIPs()

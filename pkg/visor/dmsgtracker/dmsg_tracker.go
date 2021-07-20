@@ -135,14 +135,11 @@ func (dtm *Manager) serve() {
 		select {
 		case <-dtm.done:
 			return
-
 		case <-t.C:
 			ctx, cancel := context.WithDeadline(ctx, time.Now().Add(dtm.updateTimeout))
-
 			dtm.mx.Lock()
 			dtm.updateAllTrackers(ctx, dtm.dm)
 			dtm.mx.Unlock()
-
 			cancel()
 		}
 	}

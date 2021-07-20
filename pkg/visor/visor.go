@@ -20,6 +20,7 @@ import (
 	"github.com/skycoin/skywire/pkg/routefinder/rfclient"
 	"github.com/skycoin/skywire/pkg/router"
 	"github.com/skycoin/skywire/pkg/transport"
+	"github.com/skycoin/skywire/pkg/transport/network"
 	"github.com/skycoin/skywire/pkg/transport/network/addrresolver"
 	"github.com/skycoin/skywire/pkg/util/updater"
 	"github.com/skycoin/skywire/pkg/visor/logstore"
@@ -57,11 +58,13 @@ type Visor struct {
 	ebc   *appevent.Broadcaster // event broadcaster
 	dmsgC *dmsg.Client
 
-	tpM      *transport.Manager
-	arClient addrresolver.APIClient
-	router   router.Router
-	rfClient rfclient.Client
+	stunClient *network.StunDetails
+	tpM        *transport.Manager
+	arClient   addrresolver.APIClient
+	router     router.Router
+	rfClient   rfclient.Client
 
+	isNetConf   chan bool             // net config check
 	procM       appserver.ProcManager // proc manager
 	appL        *launcher.Launcher    // app launcher
 	serviceDisc appdisc.Factory
@@ -99,6 +102,7 @@ func NewVisor(conf *visorconfig.V1, restartCtx *restart.Context) (*Visor, bool) 
 		conf:       conf,
 		restartCtx: restartCtx,
 		initLock:   new(sync.Mutex),
+		isNetConf:  make(chan bool),
 	}
 
 	if logLvl, err := logging.LevelFromString(conf.LogLevel); err != nil {
@@ -128,6 +132,7 @@ func NewVisor(conf *visorconfig.V1, restartCtx *restart.Context) (*Visor, bool) 
 		log.Error(err)
 		return nil, false
 	}
+	tm.InitConcurrent(ctx)
 	// todo: rewrite to be infinite concurrent loop that will watch for
 	// module runtime errors and act on it (by stopping visor for example)
 	if !v.processRuntimeErrs() {

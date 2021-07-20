@@ -46,6 +46,7 @@ func MakeBaseConfig(common *Common) *V1 {
 	conf.CLIAddr = skyenv.DefaultRPCAddr
 	conf.LogLevel = skyenv.DefaultLogLevel
 	conf.LocalPath = skyenv.DefaultLocalPath
+	conf.StunServers = skyenv.GetStunServers()
 	conf.ShutdownTimeout = DefaultTimeout
 	conf.RestartCheckDelay = Duration(restart.DefaultCheckDelay)
 	return conf

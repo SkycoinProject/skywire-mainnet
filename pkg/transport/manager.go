@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/skycoin/dmsg"
 	"github.com/skycoin/dmsg/cipher"
 	"github.com/skycoin/skycoin/src/util/logging"
 
@@ -39,9 +40,11 @@ type Manager struct {
 	mx        sync.RWMutex
 	wgMu      sync.Mutex
 	wg        sync.WaitGroup
-	serveOnce sync.Once // ensure we only serve once.
 	closeOnce sync.Once // ensure we only close once.
 	done      chan struct{}
+
+	readyOnce sync.Once // ensure we only ready once.
+	ready     chan struct{}
 
 	factory    network.ClientFactory
 	netClients map[network.Type]network.Client
@@ -59,6 +62,7 @@ func NewManager(log *logging.Logger, arClient addrresolver.APIClient, ebc *appev
 		tps:        make(map[uuid.UUID]*ManagedTransport),
 		readCh:     make(chan routing.Packet, 20),
 		done:       make(chan struct{}),
+		ready:      make(chan struct{}),
 		netClients: make(map[network.Type]network.Client),
 		arClient:   arClient,
 		factory:    factory,
@@ -67,55 +71,58 @@ func NewManager(log *logging.Logger, arClient addrresolver.APIClient, ebc *appev
 	return tm, nil
 }
 
-// Serve runs listening loop across all registered factories.
-func (tm *Manager) Serve(ctx context.Context) {
-	tm.serveOnce.Do(func() {
-		tm.serve(ctx)
-	})
+// InitDmsgClient initilizes the dmsg client and also adds dmsgC to the factory
+func (tm *Manager) InitDmsgClient(ctx context.Context, dmsgC *dmsg.Client) {
+	tm.factory.DmsgC = dmsgC
+	tm.InitClient(ctx, network.DMSG)
 }
 
-func (tm *Manager) serve(ctx context.Context) {
-	tm.initClients()
-	tm.runClients(ctx)
-	tm.initTransports(ctx)
-	tm.Logger.Info("transport manager is serving.")
-}
+// InitClient initilizes a network client
+func (tm *Manager) InitClient(ctx context.Context, netType network.Type) {
 
-func (tm *Manager) initClients() {
-	acceptedNetworks := []network.Type{network.STCP, network.STCPR, network.SUDPH, network.DMSG}
-	for _, netType := range acceptedNetworks {
-		client, err := tm.factory.MakeClient(netType)
-		if err != nil {
-			tm.Logger.Warnf("Cannot initialize %s transport client", netType)
-			continue
-		}
-		tm.netClients[netType] = client
+	client, err := tm.factory.MakeClient(netType)
+	if err != nil {
+		tm.Logger.Warnf("Cannot initialize %s transport client", netType)
 	}
+	tm.mx.Lock()
+	tm.netClients[netType] = client
+	tm.mx.Unlock()
+	tm.runClient(ctx, netType)
+	tm.initTransports(ctx, netType)
+
+	// Transport Manager is 'ready' once we have successfully initilized
+	// with at least one transport client.
+	tm.readyOnce.Do(func() { close(tm.ready) })
 }
 
-func (tm *Manager) runClients(ctx context.Context) {
+// Ready checks if the transport manager is ready with atleast one transport
+func (tm *Manager) Ready() <-chan struct{} {
+	return tm.ready
+}
+
+func (tm *Manager) runClient(ctx context.Context, netType network.Type) {
 	if tm.isClosing() {
 		return
 	}
-	for _, client := range tm.netClients {
-		tm.Logger.Infof("Serving %s network", client.Type())
-		err := client.Start()
-		if err != nil {
-			tm.Logger.WithError(err).Errorf("Failed to listen on %s network", client.Type())
-			continue
-		}
-		lis, err := client.Listen(skyenv.DmsgTransportPort)
-		if err != nil {
-			tm.Logger.WithError(err).Fatalf("failed to listen on network '%s' of port '%d'",
-				client.Type(), skyenv.DmsgTransportPort)
-			return
-		}
-		tm.Logger.Infof("listening on network: %s", client.Type())
-		tm.wgMu.Lock()
-		tm.wg.Add(1)
-		tm.wgMu.Unlock()
-		go tm.acceptTransports(ctx, lis)
+	tm.mx.Lock()
+	client := tm.netClients[netType]
+	tm.mx.Unlock()
+	tm.Logger.Infof("Serving %s network", client.Type())
+	err := client.Start()
+	if err != nil {
+		tm.Logger.WithError(err).Errorf("Failed to listen on %s network", client.Type())
 	}
+	lis, err := client.Listen(skyenv.DmsgTransportPort)
+	if err != nil {
+		tm.Logger.WithError(err).Fatalf("failed to listen on network '%s' of port '%d'",
+			client.Type(), skyenv.DmsgTransportPort)
+		return
+	}
+	tm.Logger.Infof("listening on network: %s", client.Type())
+	tm.wgMu.Lock()
+	tm.wg.Add(1)
+	tm.wgMu.Unlock()
+	go tm.acceptTransports(ctx, lis)
 }
 
 func (tm *Manager) acceptTransports(ctx context.Context, lis network.Listener) {
@@ -145,25 +152,27 @@ func (tm *Manager) Networks() []string {
 	return nets
 }
 
-func (tm *Manager) initTransports(ctx context.Context) {
+func (tm *Manager) initTransports(ctx context.Context, netType network.Type) {
 
 	entries, err := tm.Conf.DiscoveryClient.GetTransportsByEdge(ctx, tm.Conf.PubKey)
 	if err != nil {
-		log.Warnf("No transports found for local visor: %v", err)
+		log.Warnf("No %v transports found for local visor: %v", netType, err)
 	}
 	tm.Logger.Debugf("Initializing %d transports", len(entries))
 	for _, entry := range entries {
-		tm.Logger.Debugf("Initializing TP %v", *entry.Entry)
-		var (
-			tpType = entry.Entry.Type
-			remote = entry.Entry.RemoteEdge(tm.Conf.PubKey)
-			tpID   = entry.Entry.ID
-		)
-		isInitiator := tm.Conf.PubKey == entry.Entry.Edges[0]
-		if _, err := tm.saveTransport(ctx, remote, isInitiator, tpType, entry.Entry.Label); err != nil {
-			tm.Logger.Warnf("INIT: failed to init tp: type(%s) remote(%s) tpID(%s)", tpType, remote, tpID)
-		} else {
-			tm.Logger.Debugf("Successfully initialized TP %v", *entry.Entry)
+		if entry.Entry.Type == netType {
+			tm.Logger.Debugf("Initializing TP %v", *entry.Entry)
+			var (
+				tpType = entry.Entry.Type
+				remote = entry.Entry.RemoteEdge(tm.Conf.PubKey)
+				tpID   = entry.Entry.ID
+			)
+			isInitiator := tm.Conf.PubKey == entry.Entry.Edges[0]
+			if _, err := tm.saveTransport(ctx, remote, isInitiator, tpType, entry.Entry.Label); err != nil {
+				tm.Logger.Warnf("INIT: failed to init tp: type(%s) remote(%s) tpID(%s)", tpType, remote, tpID)
+			} else {
+				tm.Logger.Debugf("Successfully initialized TP %v", *entry.Entry)
+			}
 		}
 	}
 }

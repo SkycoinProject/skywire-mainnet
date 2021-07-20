@@ -133,3 +133,17 @@ func MustPK(pk string) cipher.PubKey {
 
 	return sPK
 }
+
+// GetStunServers gives back deafault Stun Servers
+func GetStunServers() []string {
+	return []string{
+		"45.118.133.242:3478",
+		"192.53.173.68:3478",
+		"192.46.228.39:3478",
+		"192.53.113.106:3478",
+		"192.53.117.158:3478",
+		"192.53.114.142:3478",
+		"139.177.189.166:3478",
+		"192.46.227.227:3478",
+	}
+}
